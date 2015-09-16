@@ -84,7 +84,7 @@ class EventListener(tce.RpcConnectionEventListener):
 
 			token = m.extra.getValue('__token__')
 			if token:
-				auth = desert.auth.decryptUserToken(token)
+				auth = desert.auth.decodeUserToken(token)
 				if auth:
 					if self.isTokenSessionExpired(auth):
 						error = desert.base.ErrorDefs.UserTokenSessionExpired
@@ -152,13 +152,15 @@ class TerminalGatewayServer(koala.ITerminalGatewayServer):
 
 
 	def onUserOnline(self,userid,device_id,conn):
-		serverid = tce.RpcCommunicator.instance().currentServer().getName()   #server_eps.conf 对应 server_id 与 mq 名称
+		serverid = tce.RpcCommunicator.instance().currentServer().getName()   			#server_eps.conf 对应 server_id 与 mq 名称
 		self.prxUserEventListener.onUserOnline_oneway(str(userid),str(serverid),0)
 		user = TerminalUser(userid,conn)
 		self.users[userid] = user
+
 		conn.appuser = user #可以使用conn.delta 替代
-		self.redis.set(lemon.basetype.CacheEntryFormat.UserWithTGS%userid,serverid,HEARTBEAT_TIMEOUT)
-		# self.redis.set(lemon.basetype.CacheEntryFormat.UserWithDevice%userid,device_id,HEARTBEAT_TIMEOUT)
+		self.redis.set( koala.base.CacheEntryFormat.UserWithTGS%userid,serverid,HEARTBEAT_TIMEOUT)
+
+			# self.redis.set(lemon.basetype.CacheEntryFormat.UserWithDevice%userid,device_id,HEARTBEAT_TIMEOUT)
 
 
 	def onUserOffline(self,userid,conn):
@@ -169,7 +171,8 @@ class TerminalGatewayServer(koala.ITerminalGatewayServer):
 
 		#缓存redis 记录用户由哪个tgs接入
 		serverid = tce.RpcCommunicator.instance().currentServer().getName()
-		self.redis.delete(lemon.basetype.CacheEntryFormat.UserWithTGS%userid)
+		self.redis.delete(koala.base.CacheEntryFormat.UserWithTGS%userid)
+
 		# self.redis.delete(lemon.basetype.CacheEntryFormat.UserWithDevice%userid)
 
 	def onUserLogin(self, user_id, login_tgs, targetTgs, ctx):
@@ -182,17 +185,17 @@ class TerminalGatewayServer(koala.ITerminalGatewayServer):
 		adapter = ServerApp.instance().getSocketAdatper()
 		conn = adapter.getUserConnection( int(user_id) )
 		if conn:
-			self.listener.connectReject(lemon.base.ErrorDefs.UserAnotherPlaceLogin,conn)
+			self.listener.connectReject(koala.errors.ErrorDefs.UserAnotherPlaceLogin,conn)
 			conn.recvpkg_num= 0
 
 
 	def ping(self, ctx):
-		ITerminalGatewayServer.ping(self, ctx)
-		print lemon.utils.misc.currentDateTimeStr(), 'ping() from: ',ctx.conn.getAddress()
+		koala.ITerminalGatewayServer.ping(self, ctx)
+		print desert.misc.currentDateTimeStr(), 'ping() from: ',ctx.conn.getAddress()
 		userid = ctx.conn.getUserId()
 
 		serverid = tce.RpcCommunicator.instance().currentServer().getName()   #server_eps.conf 对应 server_id 与 mq 名称
-		self.redis.set(lemon.basetype.CacheEntryFormat.UserWithTGS%userid,serverid,HEARTBEAT_TIMEOUT)
+		self.redis.set( koala.base.CacheEntryFormat.UserWithTGS%userid,serverid,HEARTBEAT_TIMEOUT)
 
 	def _threadTerminalLifeCheck(self):
 		'''
@@ -201,7 +204,6 @@ class TerminalGatewayServer(koala.ITerminalGatewayServer):
 
 		while True:
 			gevent.sleep(5)
-#			print 'check user connection..'
 			invalid_users = []
 			for userid,user in self.users.iteritems():
 				if int(time.time()) - user.livetime > HEARTBEAT_TIMEOUT:
@@ -274,7 +276,11 @@ class ServerApp(desert.app.BaseAppServer):
 
 def main():
 	argv = copy.deepcopy(sys.argv)
-	name = ''
+	name = 'gwserver'
+	if len(sys.argv) > 1:
+		name = sys.argv[-1]
+	print 'server name is: ',name
+
 	cfg =''
 	eps_listen=[]
 	loopbacks=[]
@@ -288,17 +294,31 @@ def main():
 				name = argv.pop(0)
 			if p=='-config':
 				cfg = argv.pop(0)
-			if p == '-listen':
-				eps_listen = argv.pop(0)
-				eps_listen = eps_listen.split(',')
-			if p == '-loopback':
-				s = argv.pop(0)
-				pairs = s.split(',')
-				for p in pairs:
-					call,return_ = p.split('#')
-					loopbacks.append( (call,return_) )
-			if p == '-redirector':
-				redirector = argv.pop(0)
+
+			# if p == '-listen':
+			# 	eps_listen = argv.pop(0)
+			# 	eps_listen = eps_listen.split(',')
+			# if p == '-loopback':
+			# 	s = argv.pop(0)
+			# 	pairs = s.split(',')
+			# 	for p in pairs:
+			# 		call,return_ = p.split('#')
+			# 		loopbacks.append( (call,return_) )
+			# if p == '-redirector':
+			# 	redirector = argv.pop(0)
+
+		#读services.xml配置 endpoint
+		config_file = init_script.ETC_PATH+'/services.xml'
+		tce.RpcCommunicator.instance().init( name ).initMessageRoute(config_file)
+		server = tce.RpcCommunicator.instance().currentServer()
+		value = server.getPropertyValue('listen')
+		eps_listen = value.split(',')
+
+		value = server.getPropertyValue('loopback')
+		pairs = value.split(',')
+		for p in pairs:
+			call,return_ = p.split('#')
+			loopbacks.append( (call,return_) )
 	except:
 		usage()
 		return
@@ -330,7 +350,7 @@ def main():
 		ep1.impl.setLoopbackMQ(ep2.impl)
 
 #	print name,cfg,eps,type
-	print 'Instance:',name,' started \nwaiting for shutdown..'
+	print 'service: ',name,' started \nwaiting for shutdown..'
 	tce.RpcCommunicator.instance().waitForShutdown()
 
 if __name__ == '__main__':

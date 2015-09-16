@@ -82,17 +82,19 @@ struct PushMessage_t{
 };
 
 
+
+
 struct Message_t{
 	string seq;
-	string title;
+	string sender_id;
+    string send_time;
+
+    string title;
 	string content;
 	int    type;
     PushMessageStyle_t style;
     PushClickAction_t action;
     string custom;
-
-    string sender_id;
-    string send_time;
 
     // for ios
     string alert;
@@ -107,6 +109,7 @@ struct Message_t{
 // ITerminal 终端接口
 interface ITerminal{
 	void onMessage(Message_t message);
+	void onReject(string errcode,string errmsg);
 };
 
 interface IUserEventListener{
