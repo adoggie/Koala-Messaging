@@ -1,0 +1,15 @@
+
+import koala
+
+module koala{
+
+//IMessageServer - 消息服务器
+interface IMessageServer {
+	void pushMessage(SIDS_t token_list,PushMessage_t message);
+	void confirmMessage(SIDS_t seqs);
+};
+
+
+}
+//-- The End -----------------------------
+

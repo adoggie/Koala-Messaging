@@ -1,0 +1,4 @@
+<if id="0" name="koala.ITerminal"/>
+<if id="1" name="koala.IUserEventListener"/>
+<if id="2" name="koala.ITerminalGatewayServer"/>
+<if id="3" name="koala.IMessageServer"/>
