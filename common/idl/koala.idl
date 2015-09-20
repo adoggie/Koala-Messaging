@@ -43,12 +43,12 @@ struct AuthToken_t{
 };
 
 
-struct PushMessageStyle_t{
+struct MessageStyle_t{
 	int  builder_id;
 	int  ring;
 };
 
-struct PushClickAction_t{
+struct ClickAction_t{
     int act_type;
     string  url;
     int conform_on_url;
@@ -61,15 +61,31 @@ struct PushClickAction_t{
     int   confirm_on_package;
 };
 
-struct PushMessage_t{
+
+
+struct SimpleText_t{
+    string seq;
+	string sender_id;
+    string send_time;
+
+	string title;
+	string content;
+
+};
+
+struct Message_t{
+    string seq;
+	string sender_id;
+    string sent_time;
+
 	string title;
 	string content;
 	string expire_time;
 	string send_time;
 	string accept_time;
 	int    type;
-    PushMessageStyle_t style;
-    PushClickAction_t action;
+    MessageStyle_t style;
+    ClickAction_t action;
     string custom;
     int loop_times;
     int loop_inerval;
@@ -82,39 +98,25 @@ struct PushMessage_t{
 };
 
 
-
-
-struct Message_t{
-	string seq;
-	string sender_id;
-    string send_time;
-
+struct Notification_t{
+    string type;
     string title;
-	string content;
-	int    type;
-    PushMessageStyle_t style;
-    PushClickAction_t action;
-    string custom;
-
-    // for ios
-    string alert;
-    int  badge;
-    string sound ;
-    string category;
-    string raw;
+    string content;
+    string p1;
+    string p2;
 };
-
-
 
 // ITerminal 终端接口
 interface ITerminal{
+    void onSimpleText( SimpleText_t text);
 	void onMessage(Message_t message);
-	void onReject(string errcode,string errmsg);
+	void onError(string errcode,string errmsg);
+	void onSystemNotification( Notification_t notification);
 };
 
 interface IUserEventListener{
-    void onUserOnline(string userid,string tgs_id,int device);          //用户上线 device - 登陆设备类型 0 - unknown, 1 - mobile , 2 - desktop
-    void onUserOffline(string userid,string tgs_id,int device);         //用户离线
+    void onUserOnline(string userid,string gws_id,int device);          //用户上线 device - 登陆设备类型 0 - unknown, 1 - mobile , 2 - desktop
+    void onUserOffline(string userid,string gws_id,int device);         //用户离线
 };
 
 

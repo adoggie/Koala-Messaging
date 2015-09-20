@@ -2,9 +2,9 @@
 
 basename=$(cd  `dirname $0` ; pwd)
 
-python $TCE/tce2py.py -i koala.idl,gws.idl,mexs.idl -o ../
+python $TCE/tce2py.py -i koala.idl,gws.idl,mexs.idl -o ../koala/
 
-#mv ../service/desert.py ../service/desert_impl.py
+mv ../koala/koala.py ../koala/koala_impl.py
 
 rm -f parser.out parsetab.py
 
