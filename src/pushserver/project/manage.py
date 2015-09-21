@@ -7,10 +7,10 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 
 LIBS=(
 	PATH+'/../../common',
+	PATH+'/../../../common',
 )
 for lib in LIBS:
 	sys.path.insert(0,lib)
-
 
 
 

@@ -1,34 +1,35 @@
 #--coding:utf-8--
-import base
 
-from  showbox import *
-import utils
+import os,traceback
 
-etc_path = base.GLOBAL_SERVER_EPS_FILE
+import tcelib as tce
+import desert
+from koala import base
+from koala.koala_impl import ITerminalPrx
+import init_script
+
+etc_path = init_script.ETC_PATH + '/server_eps.conf'
 tgs_proxies ={}
 
 def getTerminalProxyByUserId(cache,user_id):
-	'''
-		根据终端用户id查找在连接到哪个tgs服务器
-
+	"""根据终端用户id查找在连接到哪个tgs服务器
 		server_eps.conf 记录tqs对应的接收rpc消息的endpoint名称,
 		获取ep名称，通过RpcCommunicator.findEndpoints()得到ep
 		ep.impl就是对应服务器接收消息的连接
-	'''
+	"""
 	global tgs_proxies
 	prx = None
 	try:
-		user_id = int(user_id)
 		key =  base.CacheEntryFormat.UserWithTGS%user_id
 		print 'cache.get:',key
 		tgs = cache.get(key)
 		if  not tgs:
-			print 'user proxy not in cache.'
+			print 'user %s is offline.'
 			return None #not online
 		# print key ,tgs_proxies
 		prx = tgs_proxies.get(tgs)
 		if not prx:
-			cf = utils.config.SimpleConfig()
+			cf = desert.config.SimpleConfig()
 			cf.load(etc_path)
 			epname = cf.getValue(tgs)
 			ep = tce.RpcCommunicator.instance().currentServer().findEndPointByName(epname)

@@ -16,7 +16,7 @@ from rest_framework import pagination
 from rest_framework import decorators
 from rest_framework import parsers
 
-from model.django.core import models as core
+# from model.django.core import models as core
 from desert.webservice.webapi import SuccCallReturn,FailCallReturn
 import serializer
 from desert.webservice.webapi import USER_ID

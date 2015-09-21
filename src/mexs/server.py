@@ -35,7 +35,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 
 
 import desert
-from desert.base import  USER_ID
+from desert.base import  USER_ID,CALL_USER_ID
 
 import  model.core.models as  core
 import nosql,cached
@@ -85,8 +85,8 @@ class MessagingServiceImpl(IMessageServer,IUserEventListener):
 	def confirmMessage(self, seqs, ctx):
 		IMessageServer.confirmMessage(self, seqs, ctx)
 
-	def pushMessage(self, token_list, message, ctx):
-		IMessageServer.pushMessage(self, token_list, message, ctx)
+	def sendMessage(self, token_list, message, ctx):
+		IMessageServer.sendMessage(self, token_list, message, ctx)
 
 	#------------- IUserTeamServer --------------------------------------
 

@@ -1,9 +1,9 @@
 #--coding:utf-8--
 
 
-import imp,os,sys,traceback,os.path
-# PATH = os.path.dirname(os.path.abspath(__file__))
-# imp.load_source('init',PATH +'/../init_script.py')
+import os,sys,traceback,os.path,logging
+
+logging.basicConfig()
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 if os.path.exists('%s/../common'%PATH):
@@ -17,18 +17,21 @@ from gevent import monkey
 monkey.patch_all()
 
 from project import settings
-if settings.datebase_is_pgsql():
-	import psycogreen.gevent
-	psycogreen.gevent.patch_psycopg()
+# if settings.datebase_is_pgsql():
+# 	import psycogreen.gevent
+# 	psycogreen.gevent.patch_psycopg()
+
+from gevent.pywsgi import WSGIServer
+import django
+from django.core.handlers.wsgi import WSGIHandler
+# 大坑呢 ,  django 1.8+版本必须加上一下代码行,不然出莫名错误
+django.setup()
+
+import getopt
 
 import desert
 from desert import app
-from gevent.pywsgi import WSGIServer
-from django.core.handlers.wsgi import WSGIHandler
 import service.config
-import getopt
-
-
 
 
 class ServerApp( app.BaseAppServer ):
@@ -101,8 +104,8 @@ class ServerApp( app.BaseAppServer ):
 		service.config.initialize(self)
 		self.init(init_script.GLOBAL_SETTINGS_FILE,init_script.GLOBAL_SERVICE_FILE)
 
-		self.initLogs()
-		self.initDatabase()
+		# self.initLogs()
+		# self.initDatabase()
 
 		#- init http service
 		cfg = self.conf['http']
@@ -117,6 +120,7 @@ class ServerApp( app.BaseAppServer ):
 			WSGIServer(address, WSGIHandler(),keyfile=cfg['keyfile'],certfile=cfg['certfile']).serve_forever()
 		print 'WebService serving on %s...'%str(address)
 		WSGIServer(address, WSGIHandler()).serve_forever()
+		# WSGIServer(address, get_wsgi_application() ).serve_forever()
 
 
 def usage():
@@ -131,7 +135,7 @@ if __name__ == '__main__':
 		--name=xxx
 	"""
 
-	servername = 'mobile_api_server'
+	servername = 'push_server'
 	try:
 		options,args = getopt.getopt(sys.argv[1:],'hn:',['help','name='])
 		for name,value in options:
