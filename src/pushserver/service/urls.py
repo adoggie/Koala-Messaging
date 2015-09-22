@@ -21,6 +21,7 @@ import views
 domain_pattern = '[a-zA-Z0-9][-a-zA-Z0-9]{0,62}'
 urlpatterns = patterns('',
 	url(r'login',views.LoginView.as_view()),
+	url(r'register',views.RegisterView.as_view()),
 	# url(r'logout'),
 
 )

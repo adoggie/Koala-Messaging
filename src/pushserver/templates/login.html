@@ -5,11 +5,14 @@
 	<title></title>
 </head>
 <body>
+<p>
+{{ errors.code }}	{{ errors.content }}
+</p>
 <form method="post" >
 	{% csrf_token %}
 	<p>登录名 {{ form.username }}</p>
 	<p>口令 {{ form.password }}</p>
-	<input type="submit" value="登陆">
+	<input type="submit" value="登陆"><span style="width: 40px"></span> <a href="register">注册..</a>
 </form>
 </body>
 </html>
