@@ -7,7 +7,7 @@ import sqlite3
 import string,hashlib
 import json
 #
-from django.http import *
+from django.http import HttpResponse
 from django.shortcuts import render_to_response
 
 # import base,errors

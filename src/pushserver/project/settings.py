@@ -22,15 +22,16 @@ MANAGERS = ADMINS
 
 DATABASES = {
 	'default': {
-		# 'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-		'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-		# 'NAME': '',                      # Or path to database file if using sqlite3.
+		'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
 		# 'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-		'NAME': os.path.dirname(os.path.abspath(__file__))+'/../koala.db',
-		'USER': '',
-		'PASSWORD': '',
-		'HOST': '',
-		'PORT': '',
+		'NAME': 'koala',                      # Or path to database file if using sqlite3.
+		# 'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+		# 'NAME': os.path.dirname(os.path.abspath(__file__))+'/../koala.db',
+
+		'USER': 'postgres',
+		'PASSWORD': '111111',
+		'HOST': 'localhost',
+		'PORT': '5432',
 		'ATOMIC_REQUESTS': True,
 		# 'OPTIONS':{
 			# 'MAX_CONNS':50
@@ -160,6 +161,8 @@ TEMPLATE_DIRS = (
 	STATIC_ROOT,
 	os.path.dirname(os.path.abspath(__file__))+'/../templates',
 )
+
+LOGIN_URL = '/login'
 
 print TEMPLATE_DIRS
 INSTALLED_APPS = (

@@ -4,12 +4,17 @@ __author__ = 'scott'
 
 from django.views.generic import TemplateView,View,FormView
 from django.views.generic.edit import CreateView,DeleteView,UpdateView
-from django.shortcuts import render_to_response,render
+from django.shortcuts import render_to_response,render,redirect
 from django.template import RequestContext
 from django.http import HttpResponseBadRequest,HttpResponse
+from django.contrib.auth import authenticate,login,logout
+from django.contrib.auth.models import User as auth_user,UserManager
+from model.core.models import PushUserAccount
+
+
 
 from django.contrib import auth
-from django.contrib.auth.models import User as auth_User
+# from django.contrib.auth.models import User as auth_User
 import forms
 
 class LoginView(View):
@@ -19,8 +24,21 @@ class LoginView(View):
 
 	def post(self,request):
 		form = forms.LoginForm(data=request.POST)
+		errors = {}
 		if form.is_valid():
-			return HttpResponse('login successful!')
+			username = form.cleaned_data['username']
+			password = form.cleaned_data['password']
+			user = authenticate(username=username,password=password)
+			if user:
+				login(request,user)
+				return redirect('/main')
+			else:
+				errors = {
+				'code':100,
+				'content':u"you wrong!"
+				}
+				return render_to_response('login.html',context_instance=RequestContext(request,{'form':form,'errors':errors}))
+
 		else:
 			print type(form.errors),dir(form.errors)
 			errors = {
@@ -31,18 +49,32 @@ class LoginView(View):
 
 			# return HttpResponseBadRequest( str(form.errors.as_json()) )
 
-class RegisterView(CreateView):
-	model = auth_User
-	fields = ('username','password','email')
+class RegisterView(FormView):
+	# model = auth_user
+	# fields = ('username','password','email')
 	# template_name_suffix = '_create_form'
+	form_class = forms.RegisterForm
 	template_name = 'register.html'
-	success_url = 'register_succ.html'
+	success_url = 'register_succ'
 
 	def form_valid(self, form):
-		print form.instance
+		errors=[]
+		username = form.cleaned_data['username']
+		password = form.cleaned_data['password']
+		email = form.cleaned_data['email']
+		user = auth_user.objects.create_user(username,email,password)
+		acct = PushUserAccount(user = user)
+		acct.save()
 		return super(RegisterView,self).form_valid(form)
 
 	def form_invalid(self, form):
 		print form.errors.as_json()
 		print form.instance
 		return HttpResponse("wrong data!")
+
+
+class MainView(TemplateView):
+	template_name = "main.html"
+
+	def get_context_data(self, **kwargs):
+		return super(MainView,self).get_context_data(**kwargs)
