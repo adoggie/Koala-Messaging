@@ -4,7 +4,7 @@ from django.conf.urls import patterns, include, url
 
 from api_views import *
 
-from rest_framework.routers import  DefaultRouter
+# from rest_framework.routers import  DefaultRouter
 
 # import service
 # import service.swarm.app.UserAppViewSet
@@ -19,7 +19,7 @@ from rest_framework.routers import  DefaultRouter
 
 domain_pattern = '[a-zA-Z0-9][-a-zA-Z0-9]{0,62}'
 urlpatterns = patterns('',
-	url('push/register/$',RegisterView.as_view(),'register'),
+	url('push/app/register/$',RegisterView.as_view(),'register'),
 
 	# url(r'^WEBAPI/appserver/domain/(%s)/$'%domain_pattern,'service.swarm.domain.domain_probe',name='test1'),
 	# url(r'^WEBAPI/auth/accessToken/$',service.auth.token.user_login,name='userlogin'),
@@ -29,5 +29,5 @@ urlpatterns = patterns('',
 
 )
 
-urlpatterns += router.urls
-print urlpatterns
+# urlpatterns += router.urls
+# print urlpatterns

@@ -3,18 +3,18 @@ import os
 import sys,datetime
 
 PATH = os.path.dirname(os.path.abspath(__file__))
+if os.path.exists('%s/../common'%PATH):
+	sys.path.append('%s/../common'%PATH)
+else:
+	sys.path.append('%s/../../common'%PATH)
 
-LIBS=(
-	PATH+'/../../common/python',
-)
-for lib in LIBS:
-	sys.path.insert(0,lib)
+import init_script
 
 
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 
-from model.django.core import models as core
+from model.core import models as core
 from desert.misc import X,genUUID,getdigest
 
 USER_TYPE_ADMIN =1

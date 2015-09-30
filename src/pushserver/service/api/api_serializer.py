@@ -9,3 +9,12 @@ class RegisterSerializer(serializers.Serializer):
 	account = serializers.CharField(max_length= 40 )    #应用app的账号
 	device_id = serializers.CharField(max_length= 100)  #应用app的设备编号
 	tag = serializers.CharField(max_length=40,required=False)  # app的设备标签
+
+class SimpleMessageSerializer(serializers.Serializer):
+	pass
+	# serializers.
+class MessageSerializer(serializers.Serializer):
+	pass
+
+
+

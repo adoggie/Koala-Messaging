@@ -128,7 +128,7 @@ def usage():
 
 if __name__ == '__main__':
 	"""
-	server.py
+	mexs.py
 		-h
 		help
 		-n xxx
