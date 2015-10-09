@@ -36,8 +36,8 @@ class UserAppDevice(models.Model):
 	app = models.ForeignKey(UserApplication,db_index=True,related_name='app_devices')
 	device_id = models.CharField(max_length=100,db_index=True,help_text=u'设备编号')
 	account = models.CharField(max_length=40,db_index=True,help_text=u'app应用的用户账号')
-	tag = models.CharField(max_length=40,db_index=True,help_text=u'设备标签')
-	access_token = models.CharField(max_length=200,help_text=u'设备登陆访问token')
+	tag = models.CharField(max_length=40,db_index=True,null=True,help_text=u'设备标签')
+	access_token = models.CharField(max_length=200,null=True,help_text=u'设备登陆访问token')
 	access_time = models.DateTimeField(null=True,help_text=u'最近一次访问时间')
 	platform = models.SmallIntegerField(help_text=u'平台类型')
 

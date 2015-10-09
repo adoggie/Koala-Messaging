@@ -22,17 +22,17 @@ MANAGERS = ADMINS
 
 DATABASES = {
 	'default': {
-		'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-		# 'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+		# 'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+		'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
 		'NAME': 'koala',                      # Or path to database file if using sqlite3.
 		# 'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-		# 'NAME': os.path.dirname(os.path.abspath(__file__))+'/../koala.db',
+		'NAME': os.path.dirname(os.path.abspath(__file__))+'/../koala.db',
 
-		'USER': 'postgres',
-		'PASSWORD': '111111',
-		'HOST': 'localhost',
-		'PORT': '5432',
-		'ATOMIC_REQUESTS': True,
+		# 'USER': 'postgres',
+		# 'PASSWORD': '111111',
+		# 'HOST': 'localhost',
+		# 'PORT': '5432',
+		# 'ATOMIC_REQUESTS': True,
 		# 'OPTIONS':{
 			# 'MAX_CONNS':50
 		# }
