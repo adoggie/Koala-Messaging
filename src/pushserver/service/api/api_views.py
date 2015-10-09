@@ -86,6 +86,7 @@ def MessageView(APIView):
 			for r in rs:
 				token_list.append( r.access_token )	#设备授权凭证
 			mexs.ServerApp.instance().sendMessage( token_list, message)
+		return SuccCallReturn()
 
 	def simple_device(self,access_id,secret_key,data):
 		"""
@@ -114,6 +115,77 @@ def MessageView(APIView):
 			r = result[0]
 			token_list =[ device_token ]
 			mexs.ServerApp.instance().sendMessage( token_list, message)
+		return SuccCallReturn()
+
+
+	def simple_account(self,access_id,secret_key,data):
+		"""
+		simple_acount
+			push simple text to all devices of account
+		:param data:
+		 	account,title,content,platform
+		:return:
+		"""
+		title = data['title']
+		content = data['content']
+		platform = data.get('platform',PlatformType.PLAT_UNDEFINE)
+		platform = int(platform)
+
+		message = Message_t()
+		message.title = title
+		message.content = content
+
+		page_index = 0
+		result = core.UserApplication.objects.get(access_id=access_id,secret_key=secret_key).app_devices.all()
+		if platform:
+			result = result.filter(platform = int(platform))
+
+		while True:
+			start = page_index * PAGE_SIZE
+			end = start + PAGE_SIZE
+			rs = result[ start: end ]
+			if not rs:
+				break
+			token_list =[]
+			for r in rs:
+				token_list.append( r.access_token )	#设备授权凭证
+			mexs.ServerApp.instance().sendMessage( token_list, message)
+		return SuccCallReturn()
+
+
+	def simple_tag(self,access_id,secret_key,data):
+		"""
+		simple_tag
+			push simple text to  devices that be taged.
+		:param data:
+		 	title,content,platform
+		:return:
+		"""
+		title = data['title']
+		content = data['content']
+		platform = data.get('platform',PlatformType.PLAT_UNDEFINE)
+		platform = int(platform)
+
+		message = Message_t()
+		message.title = title
+		message.content = content
+
+		page_index = 0
+		result = core.UserApplication.objects.get(access_id=access_id,secret_key=secret_key).app_devices.all()
+		if platform:
+			result = result.filter(platform = int(platform))
+
+		while True:
+			start = page_index * PAGE_SIZE
+			end = start + PAGE_SIZE
+			rs = result[ start: end ]
+			if not rs:
+				break
+			token_list =[]
+			for r in rs:
+				token_list.append( r.access_token )	#设备授权凭证
+			mexs.ServerApp.instance().sendMessage( token_list, message)
+		return SuccCallReturn()
 
 	def post(self,request):
 		"""
