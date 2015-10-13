@@ -10,8 +10,6 @@ from api_views import *
 # import service.swarm.app.UserAppViewSet
 
 # router = DefaultRouter()
-#
-#
 # router.register(r'WEBAPI/appserver/app-account',UserAppViewSet,'account')	#第三方账号绑定
 #
 # router.register(r'WEBAPI/appserver/data/analyses', service.swarm.data.DataAnalysesViewSet,'data')	#第三方账号绑定
@@ -19,13 +17,8 @@ from api_views import *
 
 domain_pattern = '[a-zA-Z0-9][-a-zA-Z0-9]{0,62}'
 urlpatterns = patterns('',
-	url('push/app/register/$',RegisterView.as_view(),'register'),
-
-	# url(r'^WEBAPI/appserver/domain/(%s)/$'%domain_pattern,'service.swarm.domain.domain_probe',name='test1'),
-	# url(r'^WEBAPI/auth/accessToken/$',service.auth.token.user_login,name='userlogin'),
-	# url(r'^WEBAPI/auth/accessToken/detail/$',service.auth.token.decode_user_token,name='token_detail'),
-	# url(r'^WEBAPI/auth/restricted/orguser/login/$',service.auth.restricted.orguser_login,name='orguser_login'),
-
+	url('push/register/$',RegisterView.as_view(),'register'),
+	url('push/message/$',MessageView.as_view(),'message'),
 
 )
 

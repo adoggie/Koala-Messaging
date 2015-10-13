@@ -16,9 +16,10 @@ from koala.base import *
 PAGE_SIZE = 100	#每次提交 page_size条记录，防止内存溢出
 
 
-def RegisterView(APIView):
+class RegisterView(APIView):
 	"""
 	app register
+		相同account的device根据platform类型智能存在一次
 	:param request:
 		access_id - push_id
 		secret_key - push_secret
@@ -29,11 +30,15 @@ def RegisterView(APIView):
 		access_token
 	"""
 
-	def post(request):
+	def post(self,request):
 		cr = SuccCallReturn()
 		serializer = RegisterSerializer(data=request.data)
-		if not serializer.is_valid(False):
+		if not serializer.is_valid():
 			cr = FailCallReturn(ErrorDefs.ParameterIllegal,serializer.errors)
+			return cr.httpResponse()
+
+		access_id = serializer.data['access_id']
+		secret_key = serializer.data['secret_key']
 
 		return cr.httpResponse()
 
@@ -64,7 +69,7 @@ class MessageView(APIView):
 		"""
 		title = data['title']
 		content = data['content']
-		platform = data.get('platform',PlatformType.PLAT_UNDEFINE)
+		platform = data.get('platform',PlatformType.PLATFORM_UNDEFINE)
 		platform = int(platform)
 
 		message = Message_t()
@@ -88,7 +93,7 @@ class MessageView(APIView):
 		device_token = data['device_token']
 		title = data['title']
 		content = data['content']
-		platform = data.get('platform',PlatformType.PLAT_UNDEFINE)
+		platform = data.get('platform',PlatformType.PLATFORM_UNDEFINE)
 		platform = int(platform)
 
 		message = Message_t()
@@ -117,7 +122,7 @@ class MessageView(APIView):
 		account = data['account']
 		title = data['title']
 		content = data['content']
-		platform = data.get('platform',PlatformType.PLAT_UNDEFINE)
+		platform = data.get('platform',PlatformType.PLATFORM_UNDEFINE)
 		platform = int(platform)
 
 		message = Message_t()
@@ -164,7 +169,7 @@ class MessageView(APIView):
 		tag = data['tag']
 		title = data['title']
 		content = data['content']
-		platform = data.get('platform',PlatformType.PLAT_UNDEFINE)
+		platform = data.get('platform',PlatformType.PLATFORM_UNDEFINE)
 		platform = int(platform)
 
 		message = Message_t()
@@ -198,10 +203,13 @@ class MessageView(APIView):
 
 		if hasattr(self,method):
 			fx = getattr(self,method)
-			cr = fx(access_id,secret_key,request.data)
+			try:
+				cr = fx(access_id,secret_key,request.data)
+			except:
+				cr = FailCallReturn(ErrorDefs.InternalException)
 		else:
 			cr = FailCallReturn(ErrorDefs.ObjectNotExisted,'method not support: %s'%method)
-		return cr
+		return cr.httpResponse()
 
 
 
