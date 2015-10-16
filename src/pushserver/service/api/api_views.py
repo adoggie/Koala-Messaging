@@ -19,13 +19,16 @@ PAGE_SIZE = 100	#每次提交 page_size条记录，防止内存溢出
 class RegisterView(APIView):
 	"""
 	app register
-		相同account的device根据platform类型智能存在一次
-	:param request:
+		应用程序注册推送服务客户端
+		相同account的device根据platform类型仅存在一条记录，
+			that is：  android客户端注册将覆盖前一次android客户端的注册记录
+	:param :
 		access_id - push_id
 		secret_key - push_secret
 		account   - 应用账号名称
 		device_id - 设备编号
 		platform  - 平台类型
+		tag - 标签类型
 	:return:
 		access_token
 	"""
@@ -39,6 +42,10 @@ class RegisterView(APIView):
 
 		access_id = serializer.data['access_id']
 		secret_key = serializer.data['secret_key']
+		account = serializer.data['account']
+		device_id = serializer.data['device_id']
+		platform = serializer.data['platform']
+		tag = serializer.data['tag']
 
 		return cr.httpResponse()
 
