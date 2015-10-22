@@ -8,8 +8,10 @@ logging.basicConfig()
 PATH = os.path.dirname(os.path.abspath(__file__))
 if os.path.exists('%s/../common'%PATH):
 	sys.path.append('%s/../common'%PATH)
-else:
+elif os.path.exists('%s/../../common'%PATH):
 	sys.path.append('%s/../../common'%PATH)
+else:
+	sys.path.append('%s/../../../common'%PATH)
 
 import init_script
 

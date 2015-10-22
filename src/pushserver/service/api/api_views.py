@@ -1,17 +1,22 @@
 #coding:utf-8
 __author__ = 'scott'
 
+import os,datetime,time,traceback
+
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
-from koala.koala_impl import Message_t
+
+
 from desert.errors import ErrorDefs
 from desert.app import BaseAppServer
 from desert.webservice.webapi import SuccCallReturn,FailCallReturn
 from api_serializer import *
 from model.core import models as core
+from koala.koala_impl import Message_t
 from mexs import mexs
 from koala.base import *
+from token import create_device_access_token
 
 PAGE_SIZE = 100	#每次提交 page_size条记录，防止内存溢出
 
@@ -47,6 +52,29 @@ class RegisterView(APIView):
 		platform = serializer.data['platform']
 		tag = serializer.data['tag']
 
+		#添加或更新设备注册记录
+		try:
+			app = core.UserApplication.objects.get( access_id = access_id, secret_key = secret_key)
+			rs = app.app_devices.filter( account = account , device_id = device_id )
+			device = None
+			if not rs:
+				device = core.UserAppDevice()
+			else:
+				device = rs[0]
+				device.app = app
+				device.account = account
+				device.device_id = device_id
+			if tag:
+				device.tag = tag
+			if platform:
+				device.platform = platform
+			device.access_time = datetime.datetime.now()
+			device.access_token = create_device_access_token()
+			device.save()
+			cr.assign( device.access_token )		# return device access_token to app
+
+		except :
+			cr = FailCallReturn(ErrorDefs.InternalException)
 		return cr.httpResponse()
 
 

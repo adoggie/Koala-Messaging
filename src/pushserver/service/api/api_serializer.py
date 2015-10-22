@@ -11,6 +11,8 @@ class RegisterSerializer(serializers.Serializer):
 	platform = serializers.IntegerField() 		# 应用设备平台类型
 	tag = serializers.CharField(max_length=40,required=False)  # app的设备标签
 
+
+
 class SimpleMessageSerializer(serializers.Serializer):
 	pass
 	# serializers.

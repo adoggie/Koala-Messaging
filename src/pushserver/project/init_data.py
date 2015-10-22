@@ -11,14 +11,16 @@ import sys,datetime
 PATH = os.path.dirname(os.path.abspath(__file__))
 if os.path.exists('%s/../common'%PATH):
 	sys.path.append('%s/../common'%PATH)
-else:
+elif os.path.exists('%s/../../common'%PATH):
 	sys.path.append('%s/../../common'%PATH)
-
-import init_script
-
+else:
+	sys.path.append('%s/../../../common'%PATH)
 
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
+
+import django
+django.setup()	# 大坑呢 ,  django 1.8+版本必须加上一下代码行,不然出莫名错误
 
 from model.core import models as core
 from desert.misc import X,genUUID,getdigest
@@ -41,8 +43,18 @@ def_apps = [
 
 
 def clearup():
+	# print type(core.UserAppDevice.objects.all())
+
 	core.UserAppDevice.objects.all().delete()
 	core.UserApplication.objects.all().delete()
+
+	for en in def_apps:
+		app = core.UserApplication()
+		app.app_id = en['app_id']
+		app.app_name = en['app_name']
+		app.is_active = True
+		app.create_time = datetime.datetime.now()
+		
 
 
 def init_database():
