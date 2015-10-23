@@ -54,7 +54,7 @@ def clearup():
 		app.app_name = en['app_name']
 		app.is_active = True
 		app.create_time = datetime.datetime.now()
-		
+
 
 
 def init_database():
