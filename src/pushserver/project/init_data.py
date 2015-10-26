@@ -24,6 +24,7 @@ django.setup()	# 大坑呢 ,  django 1.8+版本必须加上一下代码行,不�
 
 from model.core import models as core
 from desert.misc import X,genUUID,getdigest
+from koala.base import  PlatformType
 
 USER_TYPE_ADMIN =1
 USER_TYPE_NORMAL = 2
@@ -34,9 +35,9 @@ sf_auth_uri = 'https://login.salesforce.com/services/oauth2/authorize?response_t
 def_apps = [
 	{'app_id':'com.test.first_app','app_name':'first application for testing','access_id':'c121e7d470bb11e5ab90ac87a316f916','secret_key':'shahaiNg1y',
 	 'devices':[
-		 {'device_id':'f5d2211170bb11e5ab9dac87a316f916','account':'test1@test.com','tag':'','access_token':'','platform':0},
-		 {'device_id':'7131251970bc11e5a52eac87a316f916','account':'test1@test.com','tag':'','access_token':'','platform':0},
-		 {'device_id':'78fcfe6670bc11e5bc41ac87a316f916','account':'test2@test.com','tag':'','access_token':'','platform':0},
+		 {'device_id':'f5d2211170bb11e5ab9dac87a316f916','account':'test1@test.com','tag':'','access_token':getdigest(genUUID()),'platform':PlatformType.P_HTML5},
+		 {'device_id':'7131251970bc11e5a52eac87a316f916','account':'test1@test.com','tag':'','access_token':getdigest(genUUID()),'platform':PlatformType.P_HTML5},
+		 {'device_id':'78fcfe6670bc11e5bc41ac87a316f916','account':'test2@test.com','tag':'','access_token':getdigest(genUUID()),'platform':PlatformType.P_HTML5},
 	 ]
 	 },
 ]
@@ -54,6 +55,19 @@ def clearup():
 		app.app_name = en['app_name']
 		app.is_active = True
 		app.create_time = datetime.datetime.now()
+		app.access_id = en['access_id']
+		app.secret_key = en['secret_key']
+		app.save()
+		for dev in en['devices']:
+			r = core.UserAppDevice()
+			r.app = app
+			r.device_id = dev['device_id']
+			r.account = dev['account']
+			r.tag = dev['tag']
+			r.access_token = dev['access_token']
+			r.access_time = datetime.datetime.now()
+			r.platform = dev['platform']
+			r.save()
 
 
 
