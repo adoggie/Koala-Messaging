@@ -17,8 +17,9 @@ class PushUserAccount(models.Model):
 
 
 
+
 class UserApplication(models.Model):
-	# account = models.ForeignKey(PushUserAccount)
+	account = models.ForeignKey(PushUserAccount)
 	app_id = models.CharField(max_length=200,unique=True,help_text=u'应用编号com.xyz.de')
 	app_name = models.CharField(max_length=120,help_text=u'应用名称')
 	is_active = models.BooleanField(help_text=u'是否可用')

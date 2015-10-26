@@ -1,4 +1,6 @@
-__author__ = 'scott'
+#coding:utf-8
+
+# __author__ = 'scott'
 
 from rest_framework import serializers
 

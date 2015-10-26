@@ -19,9 +19,9 @@ from gevent import monkey
 monkey.patch_all()
 
 from project import settings
-# if settings.datebase_is_pgsql():
-# 	import psycogreen.gevent
-# 	psycogreen.gevent.patch_psycopg()
+if settings.datebase_is_pgsql():
+	import psycogreen.gevent
+	psycogreen.gevent.patch_psycopg()
 
 from gevent.pywsgi import WSGIServer
 import django

@@ -10,7 +10,7 @@
 	目前仅考虑单点设备登录
 '''
 
-import os
+import os,sys
 PATH = os.path.dirname(os.path.abspath(__file__))
 if os.path.exists('%s/common'%PATH):
 	sys.path.append('%s/common'%PATH)
@@ -21,8 +21,12 @@ import os,os.path,sys,struct,time,traceback,signal,string,json
 
 from gevent import monkey
 monkey.patch_all()
-import psycogreen.gevent
-psycogreen.gevent.patch_psycopg()
+
+from django.conf import settings
+
+# if settings.datebase_is_pgsql()
+# 	import psycogreen.gevent
+# 	psycogreen.gevent.patch_psycopg()
 
 
 from django.db import transaction

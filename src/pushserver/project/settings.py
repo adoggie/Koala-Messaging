@@ -173,7 +173,7 @@ INSTALLED_APPS = (
 	'django.contrib.messages',
 	'django.contrib.staticfiles',
 	'model.core',
-	# 'rest_framework',
+	'rest_framework',
 	# 'corsheaders'
 
 	# 'nosql'
@@ -207,3 +207,10 @@ LOGGING = {
     }
 }
 
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    )
+}
