@@ -6,7 +6,7 @@ from django import forms
 
 
 class LoginForm(forms.Form):
-	username = forms.CharField(max_length=20,help_text=u'用户名称')
+	username = forms.CharField(max_length=20,help_text=u'用户名称',label=u'用户名')
 	password = forms.CharField(max_length=20,widget=forms.PasswordInput)
 
 class RegisterForm(forms.Form):

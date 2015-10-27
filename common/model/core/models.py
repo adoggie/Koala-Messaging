@@ -8,6 +8,7 @@ date: 2015/07/13
 from django.contrib.auth.models import User,UserManager
 
 from django.db import models
+import django.db.models
 
 
 
@@ -19,7 +20,7 @@ class PushUserAccount(models.Model):
 
 
 class UserApplication(models.Model):
-	account = models.ForeignKey(PushUserAccount)
+	account = models.ForeignKey(PushUserAccount,related_name='user_apps')
 	app_id = models.CharField(max_length=200,unique=True,help_text=u'应用编号com.xyz.de')
 	app_name = models.CharField(max_length=120,help_text=u'应用名称')
 	is_active = models.BooleanField(help_text=u'是否可用')
@@ -34,7 +35,7 @@ class UserAppDevice(models.Model):
 	"""
 	device 描述一个app应用登陆的设备
 	"""
-	app = models.ForeignKey(UserApplication,db_index=True,related_name='app_devices')
+	app = models.ForeignKey(UserApplication,db_index=True,related_name='app_devices',on_delete= django.db.models.CASCADE)
 	device_id = models.CharField(max_length=100,db_index=True,help_text=u'设备编号')
 	account = models.CharField(max_length=40,db_index=True,help_text=u'app应用的用户账号')
 	tag = models.CharField(max_length=40,db_index=True,null=True,help_text=u'设备标签')

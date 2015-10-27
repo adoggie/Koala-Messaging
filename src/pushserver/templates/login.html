@@ -6,13 +6,20 @@
 </head>
 <body>
 <p>
+	<h1>
+		消息推送服务<br>平台登陆
+	</h1>
 {{ errors.code }}	{{ errors.content }}
 </p>
 <form method="post" >
 	{% csrf_token %}
-	<p>登录名 {{ form.username }}</p>
+	<p>登录名 {{ form.username }} </p>
 	<p>口令 {{ form.password }}</p>
-	<input type="submit" value="登陆"><span style="width: 40px"></span> <a href="register">注册..</a>
+	<input type="submit" value="登陆"><span style="width: 40px"></span>
+
 </form>
+<p>
+	<a href="{% url 'registerxx' %}">注册..</a>
+</p>
 </body>
 </html>

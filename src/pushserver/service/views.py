@@ -3,13 +3,17 @@
 __author__ = 'scott'
 
 from django.views.generic import TemplateView,View,FormView
+from django.views.generic.list import  ListView
+
 from django.views.generic.edit import CreateView,DeleteView,UpdateView
 from django.shortcuts import render_to_response,render,redirect
 from django.template import RequestContext
 from django.http import HttpResponseBadRequest,HttpResponse
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.models import User as auth_user,UserManager
+
 from model.core.models import PushUserAccount
+import model.core.models as core
 
 
 
@@ -20,6 +24,7 @@ import forms
 class LoginView(View):
 	def get(self,request):
 		form = forms.LoginForm()
+
 		return render_to_response( 'login.html',context_instance=RequestContext(request,{'form':form}))
 
 	def post(self,request):
@@ -73,8 +78,37 @@ class RegisterView(FormView):
 		return HttpResponse("wrong data!")
 
 
-class MainView(TemplateView):
+# class MainView(TemplateView):
+class MainView(ListView):
 	template_name = "main.html"
+	paginate_by = 5
 
 	def get_context_data(self, **kwargs):
-		return super(MainView,self).get_context_data(**kwargs)
+		ctx = super(MainView,self).get_context_data(**kwargs)
+		return ctx
+
+	def get_queryset(self):
+		rs = self.request.user.auth_user.user_apps.all()
+		return rs
+
+
+class ApplicationListView(ListView):
+	template_name = "main.html"
+	paginate_by = 5
+
+	def get_context_data(self, **kwargs):
+		ctx = super(MainView,self).get_context_data(**kwargs)
+		return ctx
+
+	def get_queryset(self):
+		rs = self.request.user.auth_user.user_apps.all()
+		return rs
+
+class ApplicationDeleteView(DeleteView):
+	model = core.UserApplication
+	success_url = '/main'
+
+	def delete(self, request, *args, **kwargs):
+		# obj = self.get_object()
+		# obj.app_devices.all().delete()
+		super(ApplicationDeleteView,self).delete(request,*args,**kwargs)

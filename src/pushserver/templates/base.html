@@ -19,13 +19,17 @@
 		profile
 	</ul>
 	<ul>
-		<a href="logout">logout </a>
+		<a href="{% url 'logout' %}">logout </a>
 	</ul>
 
+</p>
+<p>
+	登陆用户: {{ view.request.user.username }}
 </p>
 
 {% block content %}
 {% endblock %}
+
 
 
 </body>

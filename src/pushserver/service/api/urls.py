@@ -16,11 +16,11 @@ from api_views import *
 # router.register(r'WEBAPI/appserver/bizmodels', service.swarm.bizmodel.BizModelViewSet,'bizmodel')	#模型视图
 
 domain_pattern = '[a-zA-Z0-9][-a-zA-Z0-9]{0,62}'
-urlpatterns = patterns('',
-	url('push/register/$',RegisterView.as_view(),'register'),
-	url('push/message/$',MessageView.as_view(),'message'),
+urlpatterns = [
+	url('^push/register/$',RegisterView.as_view(),name='api_register'),
+	url('^push/message/$',MessageView.as_view(),name='message'),
 
-)
+]
 
 # urlpatterns += router.urls
 # print urlpatterns
