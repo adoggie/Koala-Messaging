@@ -1,5 +1,6 @@
 
 
+{% block app_list %}
 
 	<p>
 	已注册Applications:
@@ -14,7 +15,8 @@
 		<td>{{ app.app_id }} </td>
 		<td>{{ app.app_name|urlize}}</td>
 		<td>
-			<a href="{% url 'app' %}" >delete</a>
+
+			<a href="{%  url 'app-detail'  %}" >delete</a>
 		</td>
 	</tr>
 {% endfor %}
@@ -46,3 +48,6 @@
   <a href="?page={{ paginator.next_page_number }}">Next</a>
 {% endif %}
 </p>
+
+
+{% endblock %}

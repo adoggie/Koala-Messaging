@@ -1,7 +1,37 @@
 
 {% extends "base.html" %}
-{% block content %}
 
-	{% include "app_list.html" %}
+{% block content %}
+{#	{% include "app_list.html" %}#}
+
+	<p>
+	已注册Applications:
+	</p>
+	<p>
+	<a href="{% url 'app-create' %}"> new app </a>
+	</p>
+<table>
+<th> 编号</th>
+<th> app_id</th>
+<th> app_name</th>
+{% for app in object_list %}
+	<tr>
+	{% url 'app-detail' app.id as app_url %}
+		<td>{{ forloop.counter }}</td>
+		<td>
+			<a href="{{ app_url }}" >
+			{{ app.app_id }}
+				</a>
+		</td>
+		<td>{{ app.app_name|urlize}}</td>
+		<td>
+			<a href="{%  url 'app-delete' app.id %}" >delete</a>
+		</td>
+	</tr>
+{% endfor %}
+</table>
+
 
 {% endblock %}
+
+

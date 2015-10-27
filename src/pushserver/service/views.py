@@ -2,7 +2,7 @@
 
 __author__ = 'scott'
 
-from django.views.generic import TemplateView,View,FormView
+from django.views.generic import TemplateView,View,FormView,DetailView
 from django.views.generic.list import  ListView
 
 from django.views.generic.edit import CreateView,DeleteView,UpdateView
@@ -76,6 +76,40 @@ class RegisterView(FormView):
 		print form.errors.as_json()
 		print form.instance
 		return HttpResponse("wrong data!")
+
+class ApplicationCreateView(CreateView):
+	# model = core.UserApplication,
+	from_class = forms.ApplicationForm
+	# fields = ['app_id','app_name','is_active','create_time','access_id','secret_key']
+	template_name = "app_detail.html"
+	success_url = '/main'
+
+	def get(self, request, *args, **kwargs):
+		form = forms.ApplicationForm()
+		return render_to_response( 'app_detail.html',context_instance=RequestContext(request,{'form':form}))
+
+
+class ApplicationUpdateView(UpdateView):
+	model = core.UserApplication,
+	# from_class = forms.ApplicationForm
+	fields = ['app_id','app_name','is_active','create_time','access_id','secret_key']
+
+	template_name = "app_detail.html"
+	success_url = '/main'
+
+	def get(self, request, *args, **kwargs):
+		super(ApplicationUpdateView,self).get(self,request,*args,**kwargs)
+
+class ApplicationDetailView(DetailView):
+	# form_class =  forms.ApplicationForm
+	# def get(self, request, *args, **kwargs):
+	model = core.UserApplication
+	template_name = "app_detail.html"
+
+	def get_context_data(self,**kwargs):
+		ctx = super(ApplicationDetailView,self).get_context_data(**kwargs)
+		ctx['form'] = forms.ApplicationForm(instance= ctx['object'])
+		return ctx
 
 
 # class MainView(TemplateView):
