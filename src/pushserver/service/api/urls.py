@@ -2,7 +2,9 @@
 
 from django.conf.urls import patterns, include, url
 
-from api_views import *
+# from api_views import *
+
+import api_views
 
 # from rest_framework.routers import  DefaultRouter
 
@@ -17,8 +19,13 @@ from api_views import *
 
 domain_pattern = '[a-zA-Z0-9][-a-zA-Z0-9]{0,62}'
 urlpatterns = [
-	url('^push/register/$',RegisterView.as_view(),name='api_register'),
-	url('^push/message/$',MessageView.as_view(),name='message'),
+	url('^push/register/$',api_views.RegisterView.as_view(),name='api_register'),
+	# url('^push/message/$',api_views.MessageView.as_view(),name='message'),
+	url('^push/simple/all/$',api_views.simple_all,name='push-simple-all'),
+	url('^push/simple/device/$',api_views.simple_device,name='push-simple-device'),
+	url('^push/simple/account/$',api_views.simple_account,name='push-simple-account'),
+	url('^push/simple/tag/$',api_views.simple_tag,name='push-simple-tag'),
+
 
 ]
 

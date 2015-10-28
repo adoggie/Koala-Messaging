@@ -4,7 +4,7 @@ __author__ = 'scott'
 import os,datetime,time,traceback
 
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,parser_classes
 from rest_framework.parsers import JSONParser
 
 
@@ -85,167 +85,320 @@ class MessageHelper:
 	@classmethod
 	def from_json(cls,data):
 		return cls()
+#
+# class MessageView(APIView):
+# 	"""
+# 	message pushing
+# 	:param APIView:
+# 	:return:
+# 	"""
+# 	parser_classes = (JSONParser,)
+#
+# 	def simple(self,access_id,secret_key,data):
+# 		"""
+# 		simple()
+# 			push simple text to all device
+# 		:param data:
+# 		 	title,content,platform
+# 		:return:
+# 		"""
+# 		title = data['title']
+# 		content = data['content']
+# 		platform = data.get('platform',PlatformType.PLATFORM_UNDEFINE)
+# 		platform = int(platform)
+#
+# 		message = Message_t()
+# 		message.title = title
+# 		message.content = content
+#
+# 		result = core.UserApplication.objects.get(access_id=access_id,secret_key=secret_key).app_devices.all()
+# 		if platform:
+# 			result = result.filter(platform = int(platform))
+# 		self.sendMessagePaginated(result,message)
+# 		return SuccCallReturn()
+#
+# 	def simple_device(self,access_id,secret_key,data):
+# 		"""
+# 		simple_device()
+# 			push simple text to specified device
+# 		:param data:
+# 		 	device_token,title,content,platform
+# 		:return:
+# 		"""
+# 		device_token = data['device_token']
+# 		title = data['title']
+# 		content = data['content']
+# 		platform = data.get('platform',PlatformType.PLATFORM_UNDEFINE)
+# 		platform = int(platform)
+#
+# 		message = Message_t()
+# 		message.title = title
+# 		message.content = content
+#
+# 		result = core.UserApplication.objects.get(access_id=access_id,secret_key=secret_key).app_devices.all()
+# 		result = result.filter( access_token = device_token)
+# 		if platform:
+# 			result = result.filter(platform = int(platform))
+# 		if result:
+# 			r = result[0]
+# 			token_list =[ device_token ]
+# 			mexs.ServerApp.instance().sendMessage( token_list, message)
+# 		return SuccCallReturn()
+#
+#
+# 	def simple_account(self,access_id,secret_key,data):
+# 		"""
+# 		simple_acount
+# 			push simple text to devices of account
+# 		:param data:
+# 		 	account,title,content,platform
+# 		:return:
+# 		"""
+# 		account = data['account']
+# 		title = data['title']
+# 		content = data['content']
+# 		platform = data.get('platform',PlatformType.PLATFORM_UNDEFINE)
+# 		platform = int(platform)
+#
+# 		message = Message_t()
+# 		message.title = title
+# 		message.content = content
+#
+#
+# 		result = core.UserApplication.objects.get(access_id=access_id,secret_key=secret_key).app_devices.all()
+# 		if platform:
+# 			result = result.filter(platform = int(platform))
+# 		result = result.filter( account = account)
+# 		self.sendMessagePaginated(result,message)
+# 		return SuccCallReturn()
+#
+# 	def sendMessagePaginated(self,rs,message):
+# 		"""
+# 		sendMessagePaginated
+# 			批量发送消息到目标设备
+# 		:param rs:
+# 		:param message:
+# 		:return:
+# 		"""
+# 		page_index = 0
+# 		result = rs
+# 		while True:
+# 			start = page_index * PAGE_SIZE
+# 			end = start + PAGE_SIZE
+# 			rs = result[ start: end ]
+# 			if not rs:
+# 				break
+# 			token_list =[]
+# 			for r in rs:
+# 				token_list.append( r.access_token )	#设备授权凭证
+# 			mexs.ServerApp.instance().sendMessage( token_list, message)
+#
+# 	def simple_tag(self,access_id,secret_key,data):
+# 		"""
+# 		simple_tag
+# 			push simple text to  devices that be taged.
+# 		:param data:
+# 		 	tag,title,content,platform
+# 		:return:
+# 		"""
+# 		tag = data['tag']
+# 		title = data['title']
+# 		content = data['content']
+# 		platform = data.get('platform',PlatformType.P_UNDEFINED)
+# 		platform = int(platform)
+#
+# 		message = Message_t()
+# 		message.title = title
+# 		message.content = content
+#
+#
+# 		result = core.UserApplication.objects.get(access_id=access_id,secret_key=secret_key).app_devices.all()
+# 		if platform:
+# 			result = result.filter(platform = int(platform))
+# 		result = result.filter( tag = tag)
+# 		self.sendMessagePaginated(result,message)
+# 		return SuccCallReturn()
+#
+# 	def post(self,request):
+# 		"""
+# 		post
+# 			消息推送
+# 		:param request:
+# 			access_id,secret_key,method,detail...
+# 		methods:
+# 			simple,simple_device,simple_account,simple_tag  简单消息发送
+# 			message,message_device,message_account,message_tag  复合消息发送
+#
+# 		:return:
+# 		"""
+# 		cr = SuccCallReturn()
+# 		method = request.data['method']
+# 		access_id = request.data['access_id']
+# 		secret_key = request.data['secret_key']
+#
+# 		if hasattr(self,method):
+# 			fx = getattr(self,method)
+# 			try:
+# 				cr = fx(access_id,secret_key,request.data)
+# 			except:
+# 				cr = FailCallReturn(ErrorDefs.InternalException)
+# 		else:
+# 			cr = FailCallReturn(ErrorDefs.ObjectNotExisted,'method not support: %s'%method)
+# 		return cr.httpResponse()
 
-class MessageView(APIView):
+
+@api_view(['POST'])
+@parser_classes((JSONParser,))
+def simple_all(request):
 	"""
-	message pushing
-	:param APIView:
+	simple()
+		push simple text to all device
+	:param data:
+	    title,content,platform
 	:return:
 	"""
-	parser_classes = (JSONParser,)
+	cr = SuccCallReturn()
+	access_id = request.data['access_id']
+	secret_key = request.data['secret_key']
+	data = request.data
+	title = data['title']
+	content = data['content']
+	platform = data.get('platform',PlatformType.P_UNDEFINED)
+	platform = int(platform)
 
-	def simple(self,access_id,secret_key,data):
-		"""
-		simple()
-			push simple text to all device
-		:param data:
-		 	title,content,platform
-		:return:
-		"""
-		title = data['title']
-		content = data['content']
-		platform = data.get('platform',PlatformType.PLATFORM_UNDEFINE)
-		platform = int(platform)
+	message = Message_t()
+	message.title = title
+	message.content = content
 
-		message = Message_t()
-		message.title = title
-		message.content = content
-
-		result = core.UserApplication.objects.get(access_id=access_id,secret_key=secret_key).app_devices.all()
-		if platform:
-			result = result.filter(platform = int(platform))
-		self.sendMessagePaginated(result,message)
-		return SuccCallReturn()
-
-	def simple_device(self,access_id,secret_key,data):
-		"""
-		simple_device()
-			push simple text to specified device
-		:param data:
-		 	device_token,title,content,platform
-		:return:
-		"""
-		device_token = data['device_token']
-		title = data['title']
-		content = data['content']
-		platform = data.get('platform',PlatformType.PLATFORM_UNDEFINE)
-		platform = int(platform)
-
-		message = Message_t()
-		message.title = title
-		message.content = content
-
-		result = core.UserApplication.objects.get(access_id=access_id,secret_key=secret_key).app_devices.all()
-		result = result.filter( access_token = device_token)
-		if platform:
-			result = result.filter(platform = int(platform))
-		if result:
-			r = result[0]
-			token_list =[ device_token ]
-			mexs.ServerApp.instance().sendMessage( token_list, message)
-		return SuccCallReturn()
+	result = core.UserApplication.objects.get(access_id=access_id,secret_key=secret_key).app_devices.all()
+	if platform:
+		result = result.filter(platform = int(platform))
+	sendMessagePaginated(result,message)
+	return cr.httpResponse()
 
 
-	def simple_account(self,access_id,secret_key,data):
-		"""
-		simple_acount
-			push simple text to devices of account
-		:param data:
-		 	account,title,content,platform
-		:return:
-		"""
-		account = data['account']
-		title = data['title']
-		content = data['content']
-		platform = data.get('platform',PlatformType.PLATFORM_UNDEFINE)
-		platform = int(platform)
+@api_view(['POST'])
+@parser_classes((JSONParser,))
+def simple_device(request):
+	"""
+	simple_device()
+		push simple text to specified device
+	:param data:
+	    device_token,title,content,platform
+	:return:
+	"""
+	cr = SuccCallReturn()
 
-		message = Message_t()
-		message.title = title
-		message.content = content
+	access_id = request.data['access_id']
+	secret_key = request.data['secret_key']
+	data = request.data
 
+	device_token = data['device_token']
+	title = data['title']
+	content = data['content']
+	platform = data.get('platform',PlatformType.P_UNDEFINED)
+	platform = int(platform)
 
-		result = core.UserApplication.objects.get(access_id=access_id,secret_key=secret_key).app_devices.all()
-		if platform:
-			result = result.filter(platform = int(platform))
-		result = result.filter( account = account)
-		self.sendMessagePaginated(result,message)
-		return SuccCallReturn()
+	message = Message_t()
+	message.title = title
+	message.content = content
 
-	def sendMessagePaginated(self,rs,message):
-		"""
-		sendMessagePaginated
-			批量发送消息到目标设备
-		:param rs:
-		:param message:
-		:return:
-		"""
-		page_index = 0
-		result = rs
-		while True:
-			start = page_index * PAGE_SIZE
-			end = start + PAGE_SIZE
-			rs = result[ start: end ]
-			if not rs:
-				break
-			token_list =[]
-			for r in rs:
-				token_list.append( r.access_token )	#设备授权凭证
-			mexs.ServerApp.instance().sendMessage( token_list, message)
+	result = core.UserApplication.objects.get(access_id=access_id,secret_key=secret_key).app_devices.all()
+	result = result.filter( access_token = device_token)
+	if platform:
+		result = result.filter(platform = int(platform))
+	if result:
+		r = result[0]
+		token_list =[ device_token ]
+		mexs.ServerApp.instance().sendMessage( token_list, message)
+	return cr.httpResponse()
 
-	def simple_tag(self,access_id,secret_key,data):
-		"""
-		simple_tag
-			push simple text to  devices that be taged.
-		:param data:
-		 	tag,title,content,platform
-		:return:
-		"""
-		tag = data['tag']
-		title = data['title']
-		content = data['content']
-		platform = data.get('platform',PlatformType.PLATFORM_UNDEFINE)
-		platform = int(platform)
+@api_view(['POST'])
+@parser_classes((JSONParser,))
+def simple_account(request):
+	"""
+	simple_acount
+		push simple text to devices of account
+	:param data:
+	    account,title,content,platform
+	:return:
+	"""
+	cr = SuccCallReturn()
+	access_id = request.data['access_id']
+	secret_key = request.data['secret_key']
+	data = request.data
 
-		message = Message_t()
-		message.title = title
-		message.content = content
+	account = data['account']
+	title = data['title']
+	content = data['content']
+	platform = data.get('platform',PlatformType.PLATFORM_UNDEFINE)
+	platform = int(platform)
+
+	message = Message_t()
+	message.title = title
+	message.content = content
 
 
-		result = core.UserApplication.objects.get(access_id=access_id,secret_key=secret_key).app_devices.all()
-		if platform:
-			result = result.filter(platform = int(platform))
-		result = result.filter( tag = tag)
-		self.sendMessagePaginated(result,message)
-		return SuccCallReturn()
+	result = core.UserApplication.objects.get(access_id=access_id,secret_key=secret_key).app_devices.all()
+	if platform:
+		result = result.filter(platform = int(platform))
+	result = result.filter( account = account)
+	sendMessagePaginated(result,message)
+	return cr.httpResponse()
 
-	def post(self,request):
-		"""
-		post
-			消息推送
-		:param request:
-			access_id,secret_key,method,detail...
-		methods:
-			simple,simple_device,simple_account,simple_tag  简单消息发送
-			message,message_device,message_account,message_tag  复合消息发送
+def sendMessagePaginated(rs,message,simple=True):
+	"""
+	sendMessagePaginated
+		批量发送消息到目标设备
+	:param rs:
+	:param message:
+	:return:
+	"""
+	page_index = 0
+	result = rs
+	while True:
+		start = page_index * PAGE_SIZE
+		end = start + PAGE_SIZE
+		rs = result[ start: end ]
+		if not rs:
+			break
+		token_list =[]
+		for r in rs:
+			token_list.append( r.access_token )	#设备授权凭证
 
-		:return:
-		"""
-		cr = SuccCallReturn()
-		method = request.data['method']
-		access_id = request.data['access_id']
-		secret_key = request.data['secret_key']
-
-		if hasattr(self,method):
-			fx = getattr(self,method)
-			try:
-				cr = fx(access_id,secret_key,request.data)
-			except:
-				cr = FailCallReturn(ErrorDefs.InternalException)
-		else:
-			cr = FailCallReturn(ErrorDefs.ObjectNotExisted,'method not support: %s'%method)
-		return cr.httpResponse()
+		mexs.ServerApp.instance().sendMessage( token_list, message,simple)
 
 
+@api_view(['POST'])
+@parser_classes((JSONParser,))
+def simple_tag(request):
+	"""
+	simple_tag
+		push simple text to  devices that be taged.
+	:param data:
+	    tag,title,content,platform
+	:return:
+	"""
+	cr = SuccCallReturn()
+	access_id = request.data['access_id']
+	secret_key = request.data['secret_key']
+	data = request.data
 
+	tag = data['tag']
+	title = data['title']
+	content = data['content']
+	platform = data.get('platform',PlatformType.P_UNDEFINED)
+	platform = int(platform)
+
+	message = Message_t()
+	message.title = title
+	message.content = content
+
+
+	result = core.UserApplication.objects.get(access_id=access_id,secret_key=secret_key).app_devices.all()
+	if platform:
+		result = result.filter(platform = int(platform))
+	result = result.filter( tag = tag)
+	sendMessagePaginated(result,message)
+	return cr.httpResponse()
 

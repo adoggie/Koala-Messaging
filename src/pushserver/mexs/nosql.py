@@ -169,6 +169,14 @@ class SendMessage(BaseType):
 			traceback.print_exc()
 		return obj
 
+	def to_simple(self):
+		return None  # SimpleText_t
+
+	def to_message(self):
+		return None # Message_t
+
+	def is_simple(self):
+		return False
 
 
 if __name__ == '__main__':
