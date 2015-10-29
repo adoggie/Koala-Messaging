@@ -303,14 +303,15 @@ def simple_device(request):
 	message.title = title
 	message.content = content
 
-	result = core.UserApplication.objects.get(access_id=access_id,secret_key=secret_key).app_devices.all()
-	result = result.filter( access_token = device_token)
+	app = core.UserApplication.objects.get(access_id=access_id,secret_key=secret_key)
+	rs = app.app_devices.all()
+	rs = rs.filter( access_token = device_token)
 	if platform:
-		result = result.filter(platform = int(platform))
-	if result:
+		rs = rs.filter(platform = int(platform))
+	if rs:
 		# r = result[0]
 		token_list =[ device_token ]
-		mexs.ServerApp.instance().sendMessage( token_list, message)
+		mexs.ServerAppMexs.instance().sendMessage( app.app_id, token_list, message)
 	return cr.httpResponse()
 
 @api_view(['POST'])

@@ -10,10 +10,12 @@ from django.contrib.auth.views import logout
 import model.core.models as core
 
 
-import views
+from . import views
 
 domain_pattern = '[a-zA-Z0-9][-a-zA-Z0-9]{0,62}'
+
 urlpatterns = patterns('',
+	url(r'^api/',include( 'service.api.urls' )),
 	url(r'^login/$',views.LoginView.as_view(),name='login'),
 	url(r'^logout/$',logout,{'next_page':'login'},name='logout'),
 	url(r'^register/$',views.RegisterView.as_view(),name='register'),
@@ -30,7 +32,7 @@ urlpatterns = patterns('',
 	url(r'^applications/new/$',login_required( views.ApplicationCreateView.as_view()),name='app-create'),
 	url(r'^applications/(?P<pk>[0-9]+)/devices/$',login_required( views.ApplicationDeviceListView.as_view() ),name='app-device-list'),
 
-	url(r'^api/$',include('service.api.urls')),
+
 )
 
 # urlpatterns += router.urls

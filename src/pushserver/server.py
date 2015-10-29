@@ -107,7 +107,7 @@ class ServerApp( app.BaseAppServer ):
 		service.config.initialize(self)
 		self.init(init_script.GLOBAL_SETTINGS_FILE,init_script.GLOBAL_SERVICE_FILE)
 
-		# self.initLogs()
+		self.initLogs()
 		# self.initDatabase()
 
 		#- init http service
@@ -148,7 +148,7 @@ if __name__ == '__main__':
 			if name in ('-n','--name'):
 				servername = value
 
-		# mexs.ServerApp.instance().init()
+		mexs.ServerAppMexs.instance().init()
 		# mexs.ServerAppMexs().init()
 
 		print 'server name:',servername

@@ -144,7 +144,7 @@ CORS_ALLOW_HEADERS = (
 		'session-token'
 	)
 
-# APPEND_SLASH=False
+APPEND_SLASH= True
 
 ROOT_URLCONF = 'service.urls'
 # ROOT_URLCONF = 'database.showbox.showbox.urls'

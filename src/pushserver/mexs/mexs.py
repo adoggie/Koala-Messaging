@@ -167,12 +167,13 @@ class ServerAppMexs( desert.app.BaseAppServer):
 		desert.app.BaseAppServer.__init__(self,name)
 
 	def init(self):
+		print 'server:(%s) initializing..'%self.name
 		# print desert.app.BaseAppServer.init(self,'a','b')
 		# print super(ServerAppMexs,self)
 		# super(ServerAppMexs,self).init( init_script.GLOBAL_SETTINGS_FILE, init_script.GLOBAL_SERVICE_FILE)
 		desert.app.BaseAppServer.init(self, init_script.GLOBAL_SETTINGS_FILE, init_script.GLOBAL_SERVICE_FILE)
 
-
+		self.initLogs()
 		nosql.database = self.mongo.db
 
 		conn1 =self.getEndPointConnection('mq_messageserver')
@@ -183,6 +184,22 @@ class ServerAppMexs( desert.app.BaseAppServer):
 
 		self.servant = MessagingServiceImpl(self)
 		adapter.addServant(self.servant)
+		print 'server initialized .'
+
+	def initLogs(self):
+		cfg = self.conf.get('log')
+		if cfg:
+			value = cfg.get('stdout')
+			if value :
+				self.getLogger().addHandler( desert.app.BaseAppServer.LOGCLS.StdoutHandler(sys.stdout))
+			value = cfg.get('file')
+			if value:
+				self.getLogger().addHandler(desert.app.BaseAppServer.LOGCLS.FileHandler(value))
+			value = cfg.get('dgram')
+			if value:
+				self.getLogger().addHandler(desert.app.BaseAppServer.LOGCLS.DatagramHandler(value))
+		if self.getLogger().handlers:
+			sys.stdout = self.getLogger()
 
 	def run(self):
 		self.init()

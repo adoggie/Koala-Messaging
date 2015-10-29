@@ -15,7 +15,7 @@ import urllib2,urllib,time
 
 userToken ='AAAAATEAAAAEdGVzdAAAAAAAAAAAU7AjqgAAAAAAAAAAU7Bp+gAAAAUxMTExMQ=='
 webserver = 'http://localhost:16001'
-webapi = webserver+'/api/'
+webapi = webserver+'/api'
 
 satisfaction={'biz_model':'satisfaction','subtype':5,'time_granule':'day','start_time':1420070400,'end_time':1435708800}
 
@@ -26,7 +26,7 @@ satisfaction={'biz_model':'satisfaction','subtype':5,'time_granule':'day','start
 
 test_case_list=[
 	{'name':'device_register','webapi':'/auth/accessToken/','params':{'user':'wangdazhi','password':'111111','domain':'ylm'}},
-	{'name':'simple_device','webapi':'/push/simple/device',
+	{'name':'simple_device','webapi':'/push/simple/device/',
 			'params':{'access_id':'c121e7d470bb11e5ab90ac87a316f916','secret_key':'shahaiNg1y',
 				'device_token':'token_001','title':u'Title - simple/device..,','content':u' the blond stand at the corner'
 			}
