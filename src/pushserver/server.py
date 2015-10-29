@@ -34,6 +34,7 @@ import getopt
 import desert
 from desert import app
 import service.config
+from mexs import mexs
 
 
 class ServerApp( app.BaseAppServer ):
@@ -146,6 +147,10 @@ if __name__ == '__main__':
 				sys.exit()
 			if name in ('-n','--name'):
 				servername = value
+
+		# mexs.ServerApp.instance().init()
+		# mexs.ServerAppMexs().init()
+
 		print 'server name:',servername
 		ServerApp(servername).run()
 	except:

@@ -197,24 +197,29 @@ def statevfs(path):
 		return all,user
 	except:return 0,0
 	
-def hashobject(obj):
-	attrs = [s for  s in dir(obj) if not s.startswith('__')]
-	kvs={}
-	for k in attrs:
-		kvs[k] = getattr(obj, k)
-	#kvs = {k:getattr(obj, k) for k in attrs}
-	return kvs
+# def hashobject(obj):
+# 	attrs = [s for  s in dir(obj) if not s.startswith('__')]
+# 	kvs={}
+# 	for k in attrs:
+# 		kvs[k] = getattr(obj, k)
+# 	#kvs = {k:getattr(obj, k) for k in attrs}
+# 	return kvs
 
-def hashobject2(obj):
+def hashobject(obj):
 	attrs = [s for  s in dir(obj) if not s.startswith('__')  ]
 	kvs={}
 	for k in attrs:
 		attr = getattr(obj, k)
 		if not callable(attr):
 			kvs[k] = attr
-
-	#kvs = {k:getattr(obj, k) for k in attrs}
 	return kvs
+
+def dict_to_python_object(dict_obj,py_obj):
+	"""
+	"""
+	for k,v in dict_obj.items() :
+		py_obj.set_attr(k,v )
+
 
 MB_SIZE = 1024.*1024.
 def formatfilesize(size):

@@ -5,7 +5,7 @@ import os,datetime,time,traceback
 
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view,parser_classes
-from rest_framework.parsers import JSONParser
+from rest_framework.parsers import JSONParser,FormParser
 
 
 from desert.errors import ErrorDefs
@@ -278,7 +278,7 @@ def simple_all(request):
 
 
 @api_view(['POST'])
-@parser_classes((JSONParser,))
+@parser_classes((FormParser,))
 def simple_device(request):
 	"""
 	simple_device()
@@ -308,7 +308,7 @@ def simple_device(request):
 	if platform:
 		result = result.filter(platform = int(platform))
 	if result:
-		r = result[0]
+		# r = result[0]
 		token_list =[ device_token ]
 		mexs.ServerApp.instance().sendMessage( token_list, message)
 	return cr.httpResponse()

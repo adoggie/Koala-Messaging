@@ -11,3 +11,7 @@ class PlatformType:
 	P_DESKTOP = 4
 	P_HTML5 = 8
 
+
+class MessageConfirmValue:
+	UNACKED = 0
+	ACKED = 1

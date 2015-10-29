@@ -7,7 +7,7 @@
 	</InterfaceDef>
 
 	<VariantDef>
-		<var name="mq-host" value="server1"/>
+		<var name="mq-host" value="s100"/>
 		<var name="mq-port" value="5672"/>
 		<var name="tgs1_socket_host" value="server2"/>
 		<var name="tgs1_socket_port" value="14001"/>
@@ -39,6 +39,15 @@
 			</route>
 
 			<extra_mqs ins="mq_gateway_broadcast" outs="mq_user_event_listener"/>
+			<properties>
+				<property name="userid_check" value="true"/>
+				<property name="listen" value="socket_gateway,mq_gateway,mq_gateway_broadcast"/>
+
+			</properties>
+		</server>
+
+		<server name="messageserver" >
+			<extra_mqs ins="mq_user_event_listener,mq_messageserver" outs=""/>
 			<properties>
 				<property name="userid_check" value="true"/>
 				<property name="listen" value="socket_gateway,mq_gateway,mq_gateway_broadcast"/>

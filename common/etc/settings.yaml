@@ -1,13 +1,13 @@
 
 mongodb:
-  host: s201
+  host: s100
   port: 27017
   user:
   passwd:
   database: sns
 
 redis:
-  host: localhost
+  host: s100
   port:
   user:
   passwd:
@@ -32,7 +32,16 @@ push_server:
   redis: redis
   log:
     stdout: true
-    file: ./api_server.log
+    file: ./pushserver.log
     dgram: localhost:9901
   app_bind_uri: http://s205:16003/WEBAPI/connector/app-account/event/bind
   job_server_data_analyses_uri: http://s189:16002/WEBAPI/jobserver/data/analyses
+
+messageserver:
+  mongodb:  mongodb
+  postgresql: postgresql
+  redis: redis
+  log:
+    stdout: true
+    file: ./mexs.log
+    dgram: localhost:9901

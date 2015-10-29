@@ -15,7 +15,7 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 if os.path.exists('%s/common'%PATH):
 	sys.path.append('%s/common'%PATH)
 else:
-	sys.path.append('%s/../common'%PATH)
+	sys.path.append('%s/../../../common'%PATH)
 
 import os,os.path,sys,struct,time,traceback,signal,string,json
 
@@ -29,8 +29,7 @@ from django.conf import settings
 # 	import psycogreen.gevent
 # 	psycogreen.gevent.patch_psycopg()
 
-
-from django.db import transaction
+import django
 from bson.objectid import ObjectId
 
 
@@ -42,9 +41,9 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 import desert
 from desert.base import  USER_ID,CALL_USER_ID
 from desert.misc import currentTimestamp64
-import  model.core.models as  core
 import nosql,cached
 from koala.koala_impl import *
+from koala.base import MessageConfirmValue
 
 
 class MessagingServiceImpl(IMessageServer,IUserEventListener):
@@ -67,25 +66,25 @@ class MessagingServiceImpl(IMessageServer,IUserEventListener):
 
 		#传递未发送消息到前端用户
 		self._sendPendingMsgToUser(userid)
-		# self._sendPendingInvitationToInvitee(userid)
+		#self._sendPendingInvitationToInvitee(userid)
 		#self._sendPendingInvitationActToInviter(userid)
 		#self._sendPendingJoinTeamRequestToTeamOwner(userid)
 		#self._sendPendingJoinTeamResultToRequester(userid)
-		# self._sendNotifications(userid)
-		# self._notifyUserStatusChanged(userid,UserStatus.Online)
+		#self._sendNotifications(userid)
+		#self._notifyUserStatusChanged(userid,UserStatus.Online)
 
 
 	def onUserOffline(self,userid,gws_id,device,ctx):
-		print 'onUserOffline..'
-		userid = int(userid)
-		gws = self.usergws.get(userid)
-		if gws != None:
-			del self.usergws[userid]
-		user = core.User.objects.get(id = int(userid))
-		user.status = UserStatus.Offline
-		user.save()
-		#通知所有用户告知本人离线
-		self._notifyUserStatusChanged(userid,UserStatus.Offline)
+		print 'onUserOffline.. \n do nothing..'
+		# userid = int(userid)
+		# gws = self.usergws.get(userid)
+		# if gws != None:
+		# 	del self.usergws[userid]
+		# user = core.User.objects.get(id = int(userid))
+		# user.status = UserStatus.Offline
+		# user.save()
+		# #通知所有用户告知本人离线
+		# self._notifyUserStatusChanged(userid,UserStatus.Offline)
 
 	# def confirmMessage(self, seqs, ctx):
 	# 	IMessageServer.confirmMessage(self, seqs, ctx)
@@ -111,43 +110,26 @@ class MessagingServiceImpl(IMessageServer,IUserEventListener):
 		send_num = 0
 		for r in rs:
 			e = nosql.SendMessage().assign(r)
-			if e.is_simple():
-				text = e.to_simple()
-				prx.onSimpleText_oneway( text,CALL_USER_ID(e.target_id))
-			else:
-				message = e.to_message()
-
-			# m = MimeText_t()
-			# m.seq =  e.id()
-			# m.text = e.content
-			# m.issue_time = e.issue_time
-			# m.type = e.type
-			# m.entities = e.entities
-			# print e.issue_time,str(e.issue_time),type(e.issue_time)
-			# if not e.team_id: # not null or  not 0
-			# 	prx.onMessageText_oneway(str(e.sender_id),m,CALL_USER_ID(userid))
-			# 	send_num+=1
-			# 	print 'send num:',send_num,'seq:',m.seq
-			# else: #传递到用户组
-			# 	prx.onTeamMessageText_oneway(str(e.sender_id),e.team_id,m,CALL_USER_ID(userid))
+			self.sendMessage( e )
 
 
+	def sendMessage(self,message):
+		"""
+		发送消息到终端客户
+		:param
+			message: (nosql.SendMessage)
 
-	def _sendMessage(self,target_id,message,simple=True):
+		:return:
+		"""
+		prx = self.getTerminalProxyByUserId(message.target_id)
+		target_id = message.target_id
 
-		m = nosql.SendMessage(message,simple=simple) # Message_t
-		m.save()
-		text = m.to_simple()
-		prx = self.getTerminalProxyByUserId(target_id)
-		print 'prx is:',prx
-		if prx :
-			# prx.onMessageText_oneway(str(userid),text,CALL_USER_ID(target_id))
+		if message.is_simple():
+			text = message.to_simple()
 			prx.onSimpleText_oneway( text,CALL_USER_ID(target_id))
-
-
-
-
-
+		else:
+			msg = message.to_message()
+			prx.onMessage_oneway( msg, CALL_USER_ID( target_id ))
 
 	def confirmMessage(self,seq_id_list,ctx):
 		"""
@@ -163,7 +145,7 @@ class MessagingServiceImpl(IMessageServer,IUserEventListener):
 				r = coll.find_one({'_id':ObjectId(seq_id),'target_id':user_id })
 				m = nosql.SendMessage().assign(r)
 				m.confirm_time = currentTimestamp64()
-				m.confirm_result = 1
+				m.confirm_result = MessageConfirmValue
 				m.save()
 		except:
 			traceback.print_exc()
@@ -175,23 +157,29 @@ class MessagingServiceImpl(IMessageServer,IUserEventListener):
 			获取ep名称，通过RpcCommunicator.findEndpoints()得到ep
 			ep.impl就是对应服务器接收消息的连接
 		'''
-		prx = cached.getTerminalProxyByUserId(ServerApp.instance().cache,user_id)
+		prx = cached.getTerminalProxyByUserId(ServerAppMexs.instance().cache,user_id)
 		return prx
 
 #--------------- Server App -------------------------------------------
 
-class ServerApp( desert.app.BaseAppServer):
+class ServerAppMexs( desert.app.BaseAppServer):
 	def __init__(self,name='messageserver'):
 		desert.app.BaseAppServer.__init__(self,name)
 
 	def init(self):
-		super(ServerApp,self).init( init_script.GLOBAL_SETTINGS_FILE, init_script.GLOBAL_SERVICE_FILE)
+		# print desert.app.BaseAppServer.init(self,'a','b')
+		# print super(ServerAppMexs,self)
+		# super(ServerAppMexs,self).init( init_script.GLOBAL_SETTINGS_FILE, init_script.GLOBAL_SERVICE_FILE)
+		desert.app.BaseAppServer.init(self, init_script.GLOBAL_SETTINGS_FILE, init_script.GLOBAL_SERVICE_FILE)
+
+
 		nosql.database = self.mongo.db
 
-		server =self.getEndPointConnection('mq_messageserver')
-		conn = self.getEndPointConnection('mq_user_event_listener')
-		adapter  = tce.RpcAdapterMQ.create('server',server)
-		adapter.addConnection(conn)
+		conn1 =self.getEndPointConnection('mq_messageserver')
+		conn2 = self.getEndPointConnection('mq_user_event_listener')
+
+		adapter  = tce.RpcAdapterMQ.create('server',conn1)
+		adapter.addConnection(conn2)
 
 		self.servant = MessagingServiceImpl(self)
 		adapter.addServant(self.servant)
@@ -199,14 +187,30 @@ class ServerApp( desert.app.BaseAppServer):
 	def run(self):
 		self.init()
 
-		super(ServerApp,self).run(self)
+		super(ServerAppMexs,self).run(self)
 		self.communicator.waitForShutdown()
 
-	def sendMessage(self,device_token_list,message,simple=True):
-		for target_id in device_token_list:
-			self.servant._sendMessage( target_id,message,simple)
+	def sendMessage(self,app_id,token_list,message,simple=True):
+		"""
+			app_id :  应用标识
+			token_list: 消息接收目标列表
+			message:  消息内容 (Message_t)
+			simple:  是否是简单消息内容
+		"""
+		for target_id in token_list:
+			m = nosql.SendMessage().set_content(message,simple)
+			m.target_id = target_id
+			m.app_id = app_id
+			m.save()
+			self.servant.sendMessage( target_id,m)
 
-
+	_handle = None
+	@classmethod
+	def instance(cls):
+		if not cls._handle :
+			cls._handle = cls()
+		return cls._handle
 
 if __name__ == '__main__':
-	ServerApp().run()
+	# ServerApp().run()
+	nosql.test()
