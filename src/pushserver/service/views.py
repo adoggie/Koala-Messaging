@@ -2,15 +2,20 @@
 
 __author__ = 'scott'
 
+import datetime,traceback,sys,os,time
+
 from django.views.generic import TemplateView,View,FormView,DetailView
 from django.views.generic.list import  ListView
 
-from django.views.generic.edit import CreateView,DeleteView,UpdateView
+from django.views.generic.edit import CreateView,DeleteView,UpdateView,\
+	ModelFormMixin,FormMixin,DeletionMixin
 from django.shortcuts import render_to_response,render,redirect
 from django.template import RequestContext
 from django.http import HttpResponseBadRequest,HttpResponse
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.models import User as auth_user,UserManager
+
+from desert.misc import genUUID,random_password
 
 from model.core.models import PushUserAccount
 import model.core.models as core
@@ -78,37 +83,96 @@ class RegisterView(FormView):
 		return HttpResponse("wrong data!")
 
 class ApplicationCreateView(CreateView):
-	# model = core.UserApplication,
-	from_class = forms.ApplicationForm
-	# fields = ['app_id','app_name','is_active','create_time','access_id','secret_key']
+	form_class = forms.ApplicationForm
 	template_name = "app_detail.html"
 	success_url = '/main'
 
 	def get(self, request, *args, **kwargs):
-		form = forms.ApplicationForm()
+		form = forms.ApplicationForm(initial={"is_active":True,'app_id':'x.y.z','app_name':'your app name'})
 		return render_to_response( 'app_detail.html',context_instance=RequestContext(request,{'form':form}))
 
 
-class ApplicationUpdateView(UpdateView):
-	model = core.UserApplication,
-	# from_class = forms.ApplicationForm
-	fields = ['app_id','app_name','is_active','create_time','access_id','secret_key']
+	def form_valid(self, form):
+		form.instance.create_time = datetime.datetime.now()
+		form.instance.access_id = genUUID()
+		form.instance.secret_key = random_password()
+		form.instance.account = self.request.user.auth_user
+		return super(ApplicationCreateView,self).form_valid(form)
 
-	template_name = "app_detail.html"
-	success_url = '/main'
 
-	def get(self, request, *args, **kwargs):
-		super(ApplicationUpdateView,self).get(self,request,*args,**kwargs)
+	def form_invalid(self, form):
+		errors = form.errors
+		return render_to_response( 'app_detail.html',context_instance=RequestContext(self.request,{'form':form,'errors':errors}))
 
-class ApplicationDetailView(DetailView):
+# class ApplicationUpdateView(UpdateView):
+# 	# form_class =  forms.ApplicationForm
+# 	model = core.UserApplication
+# 	fields = ['app_name','is_active']
+# 	template_name = "app_detail.html"
+# 	success_url = '/main'
+#
+# 	def get(self, request, *args, **kwargs):
+# 		super(ApplicationUpdateView,self).get(self,request,*args,**kwargs)
+#
+# 	def form_valid(self, form):
+#
+# 		return super(ApplicationUpdateView,self).form_valid(form)
+#
+# 	def form_invalid(self, form):
+# 		errors = form.errors
+# 		return redirect()
+# 		return render_to_response( 'app_detail.html',context_instance=RequestContext(self.request,{'form':form,'errors':errors}))
+
+
+class ApplicationDetailView( ModelFormMixin, DetailView):
 	# form_class =  forms.ApplicationForm
 	# def get(self, request, *args, **kwargs):
 	model = core.UserApplication
 	template_name = "app_detail.html"
+	fields = ['app_name','is_active']
+	success_url = '/main'
+	paginate_by = 5
 
 	def get_context_data(self,**kwargs):
 		ctx = super(ApplicationDetailView,self).get_context_data(**kwargs)
 		ctx['form'] = forms.ApplicationForm(instance= ctx['object'])
+		return ctx
+
+	def post(self,request,*args,**kwargs):
+		self.object = self.get_object()
+		form = self.get_form()
+		if form.is_valid():
+			return self.form_valid(form)
+		else:
+			return self.form_invalid(form)
+
+	def form_valid(self, form):
+
+		return super(ApplicationDetailView,self).form_valid(form)
+
+	def form_invalid(self, form):
+		errors = form.errors
+		# return redirect()
+		return super(ApplicationDetailView,self).form_invalid(form)
+
+		# return render_to_response( 'app_detail.html',context_instance=RequestContext(self.request,{'form':form,'errors':errors}))
+
+class ApplicationDeviceListView(ListView):
+	paginate_by = 2
+	template_name = "dev_list.html"
+
+	def get(self, request, *args, **kwargs):
+		return super(ApplicationDeviceListView,self).get(request,*args,**kwargs)
+
+	def get_queryset(self):
+		pk = self.kwargs.get('pk')
+		self.app = core.UserApplication.objects.get(id = pk)
+		rs = self.app.app_devices.all()
+		return rs
+
+	def get_context_data(self, **kwargs):
+		ctx = super(ApplicationDeviceListView,self).get_context_data(**kwargs)
+		ctx['app'] = self.app
 		return ctx
 
 

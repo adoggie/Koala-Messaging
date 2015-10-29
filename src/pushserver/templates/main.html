@@ -2,15 +2,30 @@
 {% extends "base.html" %}
 
 {% block content %}
-{#	{% include "app_list.html" %}#}
 
+<script >
+
+function on_delete(url,app_id){
+
+	if(confirm("Do you want to delete app: "+ app_id+" really?")){
+{#		window.location = url;#}
+		form_app_list.action = url;
+{#		form_app_list.method = 'delete';#}
+		form_app_list.submit();
+	}
+}
+
+</script>
+
+{#	{% include "app_list.html" %}#}
 	<p>
-	已注册Applications:
+	Registered Applications:
 	</p>
-	<p>
-	<a href="{% url 'app-create' %}"> new app </a>
-	</p>
-<table>
+
+	<form id="form_app_list" method="post">
+{% csrf_token %}
+
+<table border="1px">
 <th> 编号</th>
 <th> app_id</th>
 <th> app_name</th>
@@ -25,13 +40,20 @@
 		</td>
 		<td>{{ app.app_name|urlize}}</td>
 		<td>
-			<a href="{%  url 'app-delete' app.id %}" >delete</a>
+			<a href="javascript:void(0)" onclick='on_delete("{% url 'app-delete' app.id %}", "{{app.app_id }}")' >delete</a>
+{#			<a href="{%  url 'app-msg-test' app.id %}" >test</a>#}
 		</td>
 	</tr>
 {% endfor %}
 </table>
 
+</form>
+
+<p>
+	<a href="{% url 'app-create' %}"> Create New App.. </a>
+</p>
 
 {% endblock %}
+
 
 

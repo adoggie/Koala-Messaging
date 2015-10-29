@@ -10,7 +10,7 @@
 
 <p>
 	<ul>
-		apps
+		<a href="{% url 'app-list' %}">apps</a>
 	</ul>
 	<ul>
 		messaging
@@ -24,7 +24,7 @@
 
 </p>
 <p>
-	登陆用户: {{ view.request.user.username }}
+	Live User: {{ view.request.user.username }}
 </p>
 
 {% block content %}

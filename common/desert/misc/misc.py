@@ -462,6 +462,11 @@ def decodeBase64(s):
 	return base64.decodestring(s)
 
 
+def random_password(size = 6):
+	import string,random
+	N = size
+	return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(N))
+
 if __name__=='__main__':
 	#print loadjson('node.txt')
 	#print statevfs('d:/temp4/')
