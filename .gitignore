@@ -1,5 +1,5 @@
 *.py[cod]
 *.log
 *.db
-src/pushserver/.idea/
+koala/src/pushserver/.idea/
 
