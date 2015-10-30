@@ -37,8 +37,8 @@ def_apps = [
 	{'app_id':'com.test.first_app','app_name':'first application for testing','access_id':'c121e7d470bb11e5ab90ac87a316f916','secret_key':'shahaiNg1y',
 	 'devices':[
 		 {'device_id':'f5d2211170bb11e5ab9dac87a316f916','account':'test1@test.com','tag':'','access_token':getdigest(genUUID()),'platform':PlatformType.P_HTML5},
-		 {'device_id':'7131251970bc11e5a52eac87a316f916','account':'test1@test.com','tag':'','access_token':getdigest(genUUID()),'platform':PlatformType.P_HTML5},
-		 {'device_id':'78fcfe6670bc11e5bc41ac87a316f916','account':'test2@test.com','tag':'','access_token':getdigest(genUUID()),'platform':PlatformType.P_HTML5},
+		 {'device_id':'7131251970bc11e5a52eac87a316f916','account':'test2@test.com','tag':'','access_token':getdigest(genUUID()),'platform':PlatformType.P_HTML5},
+		 {'device_id':'78fcfe6670bc11e5bc41ac87a316f916','account':'test3@test.com','tag':'','access_token':getdigest(genUUID()),'platform':PlatformType.P_HTML5},
 	 ]
 	 },
 ]

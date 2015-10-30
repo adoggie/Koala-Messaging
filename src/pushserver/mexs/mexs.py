@@ -46,6 +46,13 @@ from koala.koala_impl import *
 from koala.base import MessageConfirmValue
 
 
+# class PushMessageBehavior:
+# 	send_time = 0 		#发送时间 0 - 即刻发送
+# 	expire_time = 0 	#有效时间 0 - 永久有效
+# 	loop_time = 1 		#循环发送次数
+# 	loop_interval = 0 	#循环发送间隔
+
+
 class MessagingServiceImpl(IMessageServer,IUserEventListener):
 	def __init__(self,app):
 		IMessageServer.__init__(self)
@@ -173,7 +180,7 @@ class ServerAppMexs( desert.app.BaseAppServer):
 		# super(ServerAppMexs,self).init( init_script.GLOBAL_SETTINGS_FILE, init_script.GLOBAL_SERVICE_FILE)
 		desert.app.BaseAppServer.init(self, init_script.GLOBAL_SETTINGS_FILE, init_script.GLOBAL_SERVICE_FILE)
 
-		self.initLogs()
+		# self.initLogs()
 		nosql.database = self.mongo.db
 
 		conn1 =self.getEndPointConnection('mq_messageserver')
@@ -207,19 +214,21 @@ class ServerAppMexs( desert.app.BaseAppServer):
 		super(ServerAppMexs,self).run(self)
 		self.communicator.waitForShutdown()
 
-	def sendMessage(self,app_id,token_list,message,simple=True):
+	def sendMessage(self,app_id,token_list,message,sender_id=None,simple=True,behavior=None):
 		"""
 			app_id :  应用标识
 			token_list: 消息接收目标列表
 			message:  消息内容 (Message_t)
 			simple:  是否是简单消息内容
+			behavior: {}  消息推送的控制信息 see : nosql.SendMessage
 		"""
 		for target_id in token_list:
-			m = nosql.SendMessage().set_content(message,simple)
+			m = nosql.SendMessage(message).set_simple(simple).set_behavior(behavior)
+			m.sender_id = sender_id
 			m.target_id = target_id
 			m.app_id = app_id
 			m.save()
-			self.servant.sendMessage( target_id,m)
+			self.servant.sendMessage(m)
 
 	_handle = None
 	@classmethod

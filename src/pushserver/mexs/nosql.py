@@ -43,7 +43,7 @@ class BaseType:
 
 class SendMessage(BaseType):
 	NAME = 'send_message'
-	def __init__(self):
+	def __init__(self,message=None):
 		BaseType.__init__(self,SendMessage.NAME)
 		self.app_id = None
 		self.simple_message = True
@@ -63,8 +63,32 @@ class SendMessage(BaseType):
 		self.entities = 0            			#消息包含entites的标志 mask
 		self.userdata = None
 
-	def set_content(self,message,simple =True):
+
+		self.send_time = 0	#发送时间 0 - 即刻发送
+		self.expire_time =0 #有效时间 0 - 永久有效
+		self.loop_time = 1	#循环发送次数
+		self.loop_interval = 0	#循环发送间隔
+
+		self.set_content(message)
+
+	def set_behavior(self,behavior):
+		if not behavior:
+			return self
+		self.send_time = behavior.get('send_time',self.send_time)
+		self.expire_time = behavior.get('expire_time',self.expire_time)
+		self.loop_time = behavior.get('loop_time',self.loop_time)
+		self.loop_interval = behavior.get('loop_interval',self.loop_interval)
+
+		return self
+
+
+	def set_simple(self,simple=True):
 		self.simple_message = simple
+		return self
+
+	def set_content(self,message):
+		if not message:
+			return self
 		self.message = message
 		self.content = json.dumps( hashobject_recursived(message))
 		return self

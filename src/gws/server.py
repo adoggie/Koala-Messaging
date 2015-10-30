@@ -7,7 +7,7 @@
 
 """
 
-import imp,os
+import os,sys
 PATH = os.path.dirname(os.path.abspath(__file__))
 if os.path.exists('%s/../common'%PATH):
 	sys.path.append('%s/../common'%PATH)
@@ -24,12 +24,15 @@ import os,os.path,sys,struct,time,traceback,signal,string
 import gevent
 from gevent import monkey
 monkey.patch_all()
-import psycogreen.gevent
-psycogreen.gevent.patch_psycopg()
+
+if False:
+	import psycogreen.gevent
+	psycogreen.gevent.patch_psycopg()
 
 
 import tcelib as tce
 import koala
+from koala.koala_impl import ITerminalGatewayServer,IUserEventListenerPrx,ITerminalPrx,Notification_t
 import uuid,copy
 import settings
 import desert
@@ -38,6 +41,10 @@ import desert
 
 HEARTBEAT_TIMEOUT = 20*1000 # 20s之内必须接收到一个心跳
 # USERTOKEN_EXPIRE_TIME = 3600 * 5 # 5 天
+
+def decodeUserToken(token):
+	return object()
+
 
 class EventListener(tce.RpcConnectionEventListener):
 	def __init__(self,server):
@@ -50,21 +57,21 @@ class EventListener(tce.RpcConnectionEventListener):
 			是否token会话信息过期
 		"""
 		return False
-		if time.time() > auth.expire_time:
-			return True
-		return False
+		# if time.time() > auth.expire_time:
+		# 	return True
+		# return False
 
 	def connectReject(self,error,conn):
 		"""
 			发送通知到前端设备
 		"""
 		try:
-			termPrx = koala.ITerminalPrx(conn)
-			nm = NotifyMessage_t(type_=lemon.base.NotifyMsgType.ConnectTgsReject,
+			termPrx = ITerminalPrx(conn)
+			nm = Notification_t(type_=desert.base.NotifyMsgType.ConnectTgsReject,
 					p1=error,
-					issue_time= utils.misc.currentTimestamp64()
+					# issue_time= utils.misc.currentTimestamp64()
 					)
-			termPrx.onNotifyMessage_oneway(nm)
+			termPrx.onSystemNotification_oneway(nm)
 			conn.close()
 		except:
 			traceback.print_exc()
@@ -81,18 +88,22 @@ class EventListener(tce.RpcConnectionEventListener):
 		'''
 		if conn.getRecvedMessageCount() == 1:
 			error = desert.base.ErrorDefs.SUCC
-
+			# 将 token 直接作为 user_id
 			token = m.extra.getValue('__token__')
 			if token:
-				auth = desert.auth.decodeUserToken(token)
+				# auth = desert.auth.decodeUserToken(token)
+				auth = decodeUserToken( token )
 				if auth:
 					if self.isTokenSessionExpired(auth):
 						error = desert.base.ErrorDefs.UserTokenSessionExpired
 					else:
-						userid = auth.user_id
-						conn.setUserId(int(userid))
+						# userid = auth.user_id
+						# conn.setUserId(int(userid))
+						userid = token
+						conn.setUserId(userid)
 						self.server.onUserOnline(userid,'',conn)
-						print 'user check passed, user:',auth.user_id,auth.user_name
+						# print 'user check passed, user:',auth.user_id,auth.user_name
+						print 'user check passed, user:',token
 				else:
 					error = desert.base.ErrorDefs.UserTokenInvalid
 			else:
@@ -134,22 +145,19 @@ class TerminalUser:
 		self.livetime = int(time.time())
 
 
-
-class TerminalGatewayServer(koala.ITerminalGatewayServer):
+class TerminalGatewayServer(ITerminalGatewayServer):
 	def __init__(self):
-		koala.ITerminalGatewayServer.__init__(self)
+		ITerminalGatewayServer.__init__(self)
 		self.users={}   # {userid:heartbeat_time}
 
 		gevent.spawn(self._threadTerminalLifeCheck)
 
-		self.prxUserEventListener = koala.IUserEventListenerPrx.createWithEpName('mq_user_event_listener')
+		self.prxUserEventListener = IUserEventListenerPrx.createWithEpName('mq_user_event_listener')
 		self.listener = EventListener(self)
 		tce.RpcCommunicator.instance().setConnectionEventListener(self.listener)
 
 		self.redis = ServerApp.instance().cache
-
 		self.redirector_ep = ''
-
 
 	def onUserOnline(self,userid,device_id,conn):
 		serverid = tce.RpcCommunicator.instance().currentServer().getName()   			#server_eps.conf 对应 server_id 与 mq 名称
@@ -190,7 +198,7 @@ class TerminalGatewayServer(koala.ITerminalGatewayServer):
 
 
 	def ping(self, ctx):
-		koala.ITerminalGatewayServer.ping(self, ctx)
+		ITerminalGatewayServer.ping(self, ctx)
 		print desert.misc.currentDateTimeStr(), 'ping() from: ',ctx.conn.getAddress()
 		userid = ctx.conn.getUserId()
 
@@ -278,7 +286,8 @@ def main():
 	argv = copy.deepcopy(sys.argv)
 	name = 'gwserver'
 	if len(sys.argv) > 1:
-		name = sys.argv[-1]
+		name += '_' + sys.argv[-1]
+
 	print 'server name is: ',name
 
 	cfg =''
@@ -287,27 +296,13 @@ def main():
 	type='gwa' # or direct
 
 	try:
-		while argv:
-			p = argv.pop(0).strip().lower()
+		# while argv:
+		# 	p = argv.pop(0).strip().lower()
+		# 	if p =='-name':
+		# 		name = argv.pop(0)
+		# 	if p=='-config':
+		# 		cfg = argv.pop(0)
 
-			if p =='-name':
-				name = argv.pop(0)
-			if p=='-config':
-				cfg = argv.pop(0)
-
-			# if p == '-listen':
-			# 	eps_listen = argv.pop(0)
-			# 	eps_listen = eps_listen.split(',')
-			# if p == '-loopback':
-			# 	s = argv.pop(0)
-			# 	pairs = s.split(',')
-			# 	for p in pairs:
-			# 		call,return_ = p.split('#')
-			# 		loopbacks.append( (call,return_) )
-			# if p == '-redirector':
-			# 	redirector = argv.pop(0)
-
-		#读services.xml配置 endpoint
 		config_file = init_script.ETC_PATH+'/services.xml'
 		tce.RpcCommunicator.instance().init( name ).initMessageRoute(config_file)
 		server = tce.RpcCommunicator.instance().currentServer()
@@ -318,12 +313,12 @@ def main():
 		pairs = value.split(',')
 		for p in pairs:
 			call,return_ = p.split('#')
-			loopbacks.append( (call,return_) )
+			loopbacks.append((call,return_))
 	except:
 		usage()
 		return
 
-	if  not eps_listen:
+	if not eps_listen:
 		usage()
 		return
 
@@ -349,14 +344,11 @@ def main():
 			return -1
 		ep1.impl.setLoopbackMQ(ep2.impl)
 
-#	print name,cfg,eps,type
-	print 'service: ',name,' started \nwaiting for shutdown..'
+	print 'service: %s started \nwaiting for shutdown..'%name
 	tce.RpcCommunicator.instance().waitForShutdown()
 
 if __name__ == '__main__':
 	# if sys.argv[-1] =='websocket':
-	p ='gwserver.py -name gwserver -listen websocket_gateway_1,mq_gateway_1,mq_gateway_broadcast -loopback mq_messageserver#mq_gateway_1'
-	print 'start <<WEBSOCKET>>..'
+	# p ='gwserver.py -name gwserver -listen websocket_gateway_1,mq_gateway_1,mq_gateway_broadcast -loopback mq_messageserver#mq_gateway_1'
 
-	sys.argv = p.split(' ')
-	sys.exit( main())
+	sys.exit(main())

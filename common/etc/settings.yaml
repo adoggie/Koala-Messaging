@@ -45,3 +45,13 @@ messageserver:
     stdout: true
     file: ./mexs.log
     dgram: localhost:9901
+
+
+gwserver:
+  mongodb:  mongodb
+  postgresql: postgresql
+  redis: redis
+  log:
+    stdout: true
+    file: ./gwserver.log
+    dgram: localhost:9901
