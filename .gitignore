@@ -2,4 +2,8 @@
 *.log
 *.db
 koala/src/pushserver/.idea/
+.idea/
+*.swp
+koala/src/gws/.idea/
+*.iml
 

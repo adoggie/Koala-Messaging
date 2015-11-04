@@ -164,7 +164,9 @@ TEMPLATE_DIRS = (
 
 LOGIN_URL = '/login'
 
-print TEMPLATE_DIRS
+
+
+
 INSTALLED_APPS = (
 	'django.contrib.auth',
 	'django.contrib.contenttypes',

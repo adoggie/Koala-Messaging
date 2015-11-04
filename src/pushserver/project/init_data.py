@@ -52,7 +52,10 @@ def_users = [
 		 		{'device_id':'dev_id_0002','account':'test2@test.com','tag':'','access_token':'token_002','platform':PlatformType.P_HTML5},
 		 		{'device_id':'dev_id_0003','account':'test3@test.com','tag':'','access_token':'token_003','platform':PlatformType.P_HTML5},
 	 		]
-	 	}
+	 	},{
+			 'app_id':'app-2','app_name':'app 2','access_id':'0098271772','secret_key':'qZmthanNk',
+			 'devices':[]
+		 }
 	 ]}
 ]
 

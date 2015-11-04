@@ -2,7 +2,12 @@
 
 basename=$(cd  `dirname $0` ; pwd)
 
+alias cp="cp -f"
+
 python $TCE/tce2py.py -i koala.idl,gws.idl,mexs.idl -o ../koala/
+
+
+cp ../koala/koala.py ../../src/sdk/python/libpushmessage_client/koala_imp.py
 
 mv ../koala/koala.py ../koala/koala_impl.py
 
