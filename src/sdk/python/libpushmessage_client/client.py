@@ -9,7 +9,7 @@ import gevent
 import gevent.event
 
 
-import tcelib as tce
+# import tcelib as tce
 from koala_imp import *
 
 
@@ -43,6 +43,7 @@ class PushMessageClient:
 		self.prx_gws = None
 
 		self.ev_wait = gevent.event.Event()
+		self.is_running = False
 
 		self.on_message = None
 		self.ping = 5
@@ -95,17 +96,21 @@ class PushMessageClient:
 
 
 	def thread_background(self):
+		self.is_running = True
 		while True:
+			if not self.is_running:
+				break
 			print 'send Ping to gwserver..'
 			self.prx_gws.ping_oneway()
-			if not self.ev_wait.wait(self.ping):
-				break
+			self.ev_wait.wait(self.ping)
+
 
 		print 'thread exiting..'
 
 
 	def stop(self):
-		pass
+		self.is_running = False
+		self.ev_wait.set()
 
 	def register(self,access_id,secret_key,account,device_id,tag,platform):
 		"""
@@ -123,7 +128,7 @@ class PushMessageClient:
 			'account':account,
 			'device_id':device_id,
 			'tag':tag,
-			'platfrom':platform
+			'platform':platform
 		}
 		token = ''
 		try:
@@ -243,14 +248,15 @@ def test_app():
 	global client
 	client = PushMessageClient()
 	client.set_param(host='localhost',port=14001,ssl=False,url='http://localhost:16001')
-	client.set_param('on_message',message_recieved)
+	client.set_param(on_message=message_recieved)
 	succ = client.open( ACCESS_ID,SECRET_KEY,ACCOUNT,DEVICE_ID,TAG,PLATFORM)
 	print succ
-
-	wait_for_shutdown()
+	if succ:
+		gevent.spawn_later(2,test_send_to_self)	# 延后数秒,执行消息发送
+		wait_for_shutdown()
 
 def test_send_to_self():
-	client.simple_text_account('aha!','nice day!',ACCOUNT) # send message to account specificed
+	client.simple_text_account('boy!','nice gifts to you',ACCOUNT) # send message to account specificed
 
 if __name__ == '__main__':
 	test_app()

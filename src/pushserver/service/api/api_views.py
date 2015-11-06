@@ -61,9 +61,9 @@ class RegisterView(APIView):
 				device = core.UserAppDevice()
 			else:
 				device = rs[0]
-				device.app = app
-				device.account = account
-				device.device_id = device_id
+			device.app = app
+			device.account = account
+			device.device_id = device_id
 			if tag:
 				device.tag = tag
 			if platform:
@@ -332,7 +332,7 @@ def simple_account(request):
 	account = data['account']
 	title = data['title']
 	content = data['content']
-	platform = data.get('platform',PlatformType.PLATFORM_UNDEFINE)
+	platform = data.get('platform',PlatformType.P_UNDEFINED)
 	platform = int(platform)
 
 	message = Message_t()
@@ -367,7 +367,7 @@ def sendMessagePaginated(rs,message,simple=True):
 		for r in rs:
 			token_list.append( r.access_token )	#设备授权凭证
 
-		mexs.ServerApp.instance().sendMessage( token_list, message,simple)
+		mexs.ServerAppMexs.instance().sendMessage( token_list, message,simple)
 
 
 @api_view(['POST'])

@@ -33,6 +33,7 @@ if False:
 import tcelib as tce
 import koala
 from koala.koala_impl import ITerminalGatewayServer,IUserEventListenerPrx,ITerminalPrx,Notification_t
+import koala.base,koala.errors
 import uuid,copy
 import settings
 import desert

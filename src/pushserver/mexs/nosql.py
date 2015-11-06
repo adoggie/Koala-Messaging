@@ -26,8 +26,11 @@ class BaseType:
 	def getId(self):
 		return self.id()
 
+	def hash_value(self):
+		return hashobject(self)
+
 	def save(self):
-		d = hashobject(self)
+		d = self.hash_value()
 		coll = database[self.coll_name]
 		if not self._id:
 			_id = coll.insert(d)
@@ -70,6 +73,12 @@ class SendMessage(BaseType):
 		self.loop_interval = 0	#循环发送间隔
 
 		self.set_content(message)
+
+
+	def hash_value(self):
+		data = super(SendMessage,self).hash_value()
+		data['message'] = None
+		return data
 
 	def set_behavior(self,behavior):
 		if not behavior:

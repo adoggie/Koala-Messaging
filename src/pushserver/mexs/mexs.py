@@ -214,7 +214,7 @@ class ServerAppMexs( desert.app.BaseAppServer):
 		super(ServerAppMexs,self).run(self)
 		self.communicator.waitForShutdown()
 
-	def sendMessage(self,app_id,token_list,message,sender_id=None,simple=True,behavior=None):
+	def sendMessage(self,token_list,message,sender_id=None,simple=True,behavior=None):
 		"""
 			app_id :  应用标识
 			token_list: 消息接收目标列表
@@ -226,7 +226,7 @@ class ServerAppMexs( desert.app.BaseAppServer):
 			m = nosql.SendMessage(message).set_simple(simple).set_behavior(behavior)
 			m.sender_id = sender_id
 			m.target_id = target_id
-			m.app_id = app_id
+			# m.app_id = app_id
 			m.save()
 			self.servant.sendMessage(m)
 
