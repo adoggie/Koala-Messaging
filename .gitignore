@@ -6,4 +6,5 @@ koala/src/pushserver/.idea/
 *.swp
 koala/src/gws/.idea/
 *.iml
+*.class
 

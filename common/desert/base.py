@@ -42,7 +42,8 @@ def USER_ID2(ctx):
 
 def USER_ID(ctx):
 	s = ctx.msg.extra.getValue('__user_id__')
-	return int(s)
+	# return int(s)
+	return s
 
 
 def ID1(s):

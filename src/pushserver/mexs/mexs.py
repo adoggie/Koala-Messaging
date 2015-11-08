@@ -129,6 +129,9 @@ class MessagingServiceImpl(IMessageServer,IUserEventListener):
 		:return:
 		"""
 		prx = self.getTerminalProxyByUserId(message.target_id)
+		if not prx:
+			print 'target user is not online! (no proxy usable)'
+			return
 		target_id = message.target_id
 
 		if message.is_simple():

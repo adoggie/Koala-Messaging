@@ -40,7 +40,7 @@ import desert
 
 
 
-HEARTBEAT_TIMEOUT = 20*1000 # 20s之内必须接收到一个心跳
+HEARTBEAT_TIMEOUT = 3600*60 # 20s之内必须接收到一个心跳
 # USERTOKEN_EXPIRE_TIME = 3600 * 5 # 5 天
 
 def decodeUserToken(token):

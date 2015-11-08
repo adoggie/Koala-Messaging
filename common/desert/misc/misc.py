@@ -205,8 +205,9 @@ def statevfs(path):
 # 	#kvs = {k:getattr(obj, k) for k in attrs}
 # 	return kvs
 
-def hashobject(obj):
-	attrs = [s for  s in dir(obj) if not s.startswith('__')  ]
+def hashobject(obj,skip_chars=[]):
+	# attrs = [s for  s in dir(obj) if not s.startswith('__')  ]
+	attrs = [s for  s in dir(obj) if not s.startswith('__') and  s not in skip_chars ]
 	kvs={}
 	for k in attrs:
 		attr = getattr(obj, k)
@@ -214,11 +215,13 @@ def hashobject(obj):
 			kvs[k] = attr
 	return kvs
 
-def dict_to_python_object(dict_obj,py_obj):
+def dict_to_python_object(dict_obj,py_obj,skips=[]):
 	"""
 	"""
-	for k,v in dict_obj.items() :
-		py_obj.set_attr(k,v )
+	for k,v in dict_obj.items():
+		# py_obj.set_attr(k,v )
+		if k not in skips:
+			setattr(py_obj,k,v)
 
 
 MB_SIZE = 1024.*1024.

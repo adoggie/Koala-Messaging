@@ -357,12 +357,15 @@ def sendMessagePaginated(rs,message,simple=True):
 	"""
 	page_index = 0
 	result = rs
+
+	start = page_index * PAGE_SIZE
+	end = start + PAGE_SIZE
 	while True:
-		start = page_index * PAGE_SIZE
-		end = start + PAGE_SIZE
+
 		rs = result[ start: end ]
 		if not rs:
 			break
+		start += PAGE_SIZE
 		token_list =[]
 		for r in rs:
 			token_list.append( r.access_token )	#设备授权凭证

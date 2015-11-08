@@ -6,7 +6,7 @@ import copy
 
 from desert import config
 from desert import  logging
-class BaseAppServer:
+class BaseAppServer(object):
 
 	LOGCLS = logging.Logger
 

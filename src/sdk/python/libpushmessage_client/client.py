@@ -1,21 +1,22 @@
 #--coding:utf-8--
+"""
+同步函数使用注意,不能令gevent线程挂起, 涉及: time.sleep,Thread ..
+"""
 
 import os,os.path,sys,struct,time,traceback,time
-# sys.path.insert(0,'../../../../python')
 
 import urllib2,json,urllib
 
 import gevent
 import gevent.event
 
-
-# import tcelib as tce
 from koala_imp import *
 
 
 class TerminalImpl(ITerminal):
-	def __init__(self):
+	def __init__(self,app):
 		ITerminal.__init__(self)
+		self.app = app
 
 	def onMessage(self,message,ctx):
 		print 'onMessage:',message
@@ -25,6 +26,8 @@ class TerminalImpl(ITerminal):
 
 	def onSimpleText(self, text, ctx):
 		ITerminal.onSimpleText(self, text, ctx)
+		if self.app.on_simple_text:
+			self.app.on_simple_text(text.title,text.content)
 
 	def onError(self, errcode, errmsg, ctx):
 		ITerminal.onError(self, errcode, errmsg, ctx)
@@ -46,6 +49,8 @@ class PushMessageClient:
 		self.is_running = False
 
 		self.on_message = None
+		self.on_simple_text = None
+
 		self.ping = 5
 
 		self.host = 'localhost'
@@ -54,8 +59,10 @@ class PushMessageClient:
 		self.url = 'http://localhost/'
 
 		self.reg_info = {}
+		self.token = None
 
 		tce.RpcCommunicator.instance().init()
+
 
 	_handle = None
 	@classmethod
@@ -70,45 +77,49 @@ class PushMessageClient:
 				setattr(self,key,value)
 		return self
 
+
 	def open(self,access_id,secret_key,account,device_id,tag='',platform=0):
-
-		token = self.register(access_id,secret_key,account,device_id,tag,platform)
-		if not token :
-			return False
-
 		ep = tce.RpcEndPoint(host= self.host,port=self.port,ssl = self.ssl)
 		self.prx_mexs = IMessageServerPrx.create(ep)
 		self.prx_gws = ITerminalGatewayServerPrx.create(ep)
 
-
-
-		self.prx_gws.conn.setToken(token)
-
+		# self.register(access_id,secret_key,account,device_id,tag,platform)
 		adapter = tce.RpcCommAdapter('adapter')
-		servant = TerminalImpl()
+		servant = TerminalImpl(self)
 		adapter.addConnection( self.prx_gws.conn)
 		adapter.addServant(servant)
 		tce.RpcCommunicator.instance().addAdapter(adapter)
 
-		gevent.spawn( self.thread_background )
+		gevent.spawn( self.thread_background,reg_info={'access_id':access_id,
+			'secret_key':secret_key,'account':account,'device_id':device_id,
+			'tag':tag,'platform':platform
+		} )
 
-		return True
 
-
-	def thread_background(self):
+	def thread_background(self,reg_info):
 		self.is_running = True
+		access_id = reg_info['access_id']
+		secret_key = reg_info['secret_key']
+		account = reg_info['account']
+		device_id = reg_info['device_id']
+		tag = reg_info['tag']
+		platform = reg_info['platform']
+
 		while True:
 			if not self.is_running:
 				break
-			print 'send Ping to gwserver..'
-			self.prx_gws.ping_oneway()
+			if not self.token:
+				self.register(access_id,secret_key,account,device_id,tag,platform)
+			if self.token:
+				print 'send Ping to gwserver..'
+				self.prx_gws.ping_oneway()
 			self.ev_wait.wait(self.ping)
 
-
-		print 'thread exiting..'
+		print 'background thread exiting..'
 
 
 	def stop(self):
+		self.token = None
 		self.is_running = False
 		self.ev_wait.set()
 
@@ -142,6 +153,10 @@ class PushMessageClient:
 		except:
 			traceback.print_exc()
 			self.reg_info = {}
+
+		if token:
+			self.prx_gws.conn.setToken(token)
+			self.token = token
 		return token
 
 	def set_tag(self,tag):
@@ -222,17 +237,10 @@ class PushMessageClient:
 			traceback.print_exc()
 		return result
 
-	def _on_message(self,title,content,extra = None):
-		if self.on_message:
-			self.on_message(title,content,extra)
-
 def wait_for_shutdown():
 	tce.waitForShutdown()
 
-
-
-
-def message_recieved(title,content,extra):
+def message_recieved(title,content,extra=None):
 	print 'recved message:',title,content,extra
 
 ACCESS_ID = '0098271772'
@@ -248,18 +256,33 @@ def test_app():
 	global client
 	client = PushMessageClient()
 	client.set_param(host='localhost',port=14001,ssl=False,url='http://localhost:16001')
-	client.set_param(on_message=message_recieved)
-	succ = client.open( ACCESS_ID,SECRET_KEY,ACCOUNT,DEVICE_ID,TAG,PLATFORM)
-	print succ
-	if succ:
-		gevent.spawn_later(2,test_send_to_self)	# 延后数秒,执行消息发送
-		wait_for_shutdown()
+	client.set_param(on_simple_text = message_recieved)
+	client.open( ACCESS_ID,SECRET_KEY,ACCOUNT,DEVICE_ID,TAG,PLATFORM)
+
+	gevent.spawn_later(2,test_send_to_self)	# 延后数秒,执行消息发送
+	wait_for_shutdown()
 
 def test_send_to_self():
-	client.simple_text_account('boy!','nice gifts to you',ACCOUNT) # send message to account specificed
+	print client.token
+	count = 1
+	while True:
+		# client.simple_text_account('boy!','times:< %s > nice gifts to you'%count,ACCOUNT) # send message to account specificed
+		client.simple_text('boy!','times:< %s > nice gifts to you'%count) # send message to account specificed
+		count+=1
+		tce.sleep(3)
+		# break
+
+def test_send_lite():
+	client = PushMessageClient()
+	client.set_param(host='localhost',port=14001,ssl=False,url='http://localhost:16001')
+	client.set_param(on_simple_text = message_recieved)
+	for n in range(1000):
+		client.simple_text_account('boy!','times:< %s > nice gifts to you'%n,ACCOUNT,access_id=ACCESS_ID,secret_key=SECRET_KEY) # send message to account specificed
+		tce.sleep(2)
 
 if __name__ == '__main__':
-	test_app()
+	# test_app()
+	test_send_lite()
 
 
 

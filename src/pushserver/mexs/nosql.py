@@ -15,7 +15,7 @@ def get_collection(cls):
 	coll = database[cls.NAME]
 	return coll
 
-class BaseType:
+class BaseType(object):
 	def __init__(self,coll):
 		self._id = None
 		self.coll_name = coll
@@ -27,7 +27,7 @@ class BaseType:
 		return self.id()
 
 	def hash_value(self):
-		return hashobject(self)
+		return hashobject(self,('_id','coll_name'))
 
 	def save(self):
 		d = self.hash_value()
@@ -148,9 +148,10 @@ class SendMessage(BaseType):
 	def to_message(self):
 		message = Message_t()
 		obj = json.loads( self.content)
-		dict_to_python_object(obj,message)
+		dict_to_python_object(obj,message,('style','action') )
 		dict_to_python_object(obj['style'],message.style)
 		dict_to_python_object(obj['action'],message.action)
+		message.seq = self.getId()
 		return message # Message_t
 
 	def is_simple(self):
