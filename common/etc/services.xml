@@ -65,7 +65,7 @@
 
 
 		<server name="messageserver" >
-			<extra_mqs ins="mq_user_event_listener,mq_messageserver" outs="mq_gateway_1,mq_gateway_broadcast"/>
+			<extra_mqs ins="mq_user_event_listener,mq_messageserver" outs="mq_gateway_1,mq_gateway_2,mq_gateway_broadcast"/>
 			<properties>
 			</properties>
 		</server>

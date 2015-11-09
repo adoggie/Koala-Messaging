@@ -121,7 +121,7 @@ MIDDLEWARE_CLASSES = (
 
 	# 'service.middleware.cors.CorsHandler',
 	# 'service.middleware.auth.SessionMiddleware',
-	# 'corsheaders.middleware.CorsMiddleware',
+	'corsheaders.middleware.CorsMiddleware',
 )
 
 CORS_ORIGIN_ALLOW_ALL = True

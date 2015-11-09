@@ -289,7 +289,7 @@ def main():
 	if len(sys.argv) > 1:
 		name += '_' + sys.argv[-1]
 
-	print 'server name is: ',name
+
 
 	cfg =''
 	eps_listen=[]
@@ -297,12 +297,14 @@ def main():
 	type='gwa' # or direct
 
 	try:
-		# while argv:
-		# 	p = argv.pop(0).strip().lower()
-		# 	if p =='-name':
-		# 		name = argv.pop(0)
+		while argv:
+			p = argv.pop(0).strip().lower()
+			if p =='-name':
+				name = argv.pop(0)
 		# 	if p=='-config':
 		# 		cfg = argv.pop(0)
+		print 'server name is: ',name
+
 
 		config_file = init_script.ETC_PATH+'/services.xml'
 		tce.RpcCommunicator.instance().init( name ).initMessageRoute(config_file)
@@ -353,3 +355,6 @@ if __name__ == '__main__':
 	# p ='gwserver.py -name gwserver -listen websocket_gateway_1,mq_gateway_1,mq_gateway_broadcast -loopback mq_messageserver#mq_gateway_1'
 
 	sys.exit(main())
+
+
+# python gwserver.py [websocket]

@@ -55,3 +55,12 @@ gwserver:
     stdout: true
     file: ./gwserver.log
     dgram: localhost:9901
+
+gwserver_websocket:
+  mongodb:  mongodb
+  postgresql: postgresql
+  redis: redis
+  log:
+    stdout: true
+    file: ./gwserver_websocket.log
+    dgram: localhost:9901

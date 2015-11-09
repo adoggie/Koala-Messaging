@@ -11,7 +11,7 @@ class RegisterSerializer(serializers.Serializer):
 	account = serializers.CharField(max_length= 40 )    #应用app的账号
 	device_id = serializers.CharField(max_length= 100)  #应用app的设备编号
 	platform = serializers.IntegerField() 		# 应用设备平台类型
-	tag = serializers.CharField(max_length=40,required=False)  # app的设备标签
+	tag = serializers.CharField(max_length=40,allow_blank=True,allow_null=True,required =False)  # app的设备标签
 
 
 
