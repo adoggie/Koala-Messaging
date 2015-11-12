@@ -3,9 +3,10 @@
 
 {% block content %}
 
-<h1>
-	Application:
-</h1>
+<p>
+	Application: {{ object.app_id }}
+</p>
+
 
 {% if not object %}
 	{% url 'app-create' as app_url %}
@@ -16,59 +17,65 @@
 
 	{{ errors }}
 
-<form method="post" action="{{ app_url }}" >
+<form  method="post" action="{{ app_url }}" >
 	{% csrf_token %}
 {#	{{ form.as_table }}#}
 
-	<table>
-		<tr>
-			<td>{{ form.app_id.label }}</td>
-			<td>
-			{% if object %}
-				{{ object.app_id }}
-			{% else %}
-			{{ form.app_id }}
-			{% endif %}
-			</td>
-		</tr>
-		<tr>
-			<td>{{ form.app_name.label }}</td>
-			<td>{{ form.app_name }}</td>
-		</tr>
-		<tr>
-			<td>{{ form.is_active.label }}</td>
-			<td>{{ form.is_active }}</td>
-		</tr>
-		{% if object %}
-		<tr>
-			<td>{{ form.create_time.label }}</td>
-			<td>{{ object.create_time|date:"Y-m-d H:i:s" }}</td>
-		</tr>
-		<tr>
-			<td>{{ form.access_id.label }}</td>
-			<td>{{ object.access_id }}</td>
-		</tr>
-		<tr>
-			<td>{{ form.secret_key.label }}</td>
-			<td>{{ object.secret_key }}</td>
-		</tr>
-		{% endif %}
-	</table>
+
+
+	{{ form.app_id.label }}
+	{{ form.app_id }}
+
+
+
+	{{ form.app_name.label }}
+	{{ form.app_name }}
+
+
+
+
+	{{ form.is_active.label }}
+	{{ form.is_active }}
+
+		{{ form.create_time.label }}
+			{{ form.create_time }}
+
+	<p/>
+	{% if object %}
+
+			{{ form.create_time.label }}
+			{{ form.create_time }}
+
+{#			{{ object.create_time|date:"Y-m-d H:i:s" }}#}
+{#		{{ form.create_time|date:"Y-m-d H:i:s"  }}#}
+
+		{{ form.access_id.label }}
+		{{ form.access_id }}
+{#		{{ object.access_id }}#}
+
+		{{ form.secret_key.label }}
+		{{ form.secret_key }}
+
+{#		{{ object.secret_key }}#}
+
+	{% endif %}
+
+
 
 	{% if not object %}
 		<p>
-		<input type="submit" value="Create">
+		<input type="submit" value="Create" class="btn btn-hg btn-primary">
 		</p>
 		{% else %}
 		<p>
-		<input type="submit" value="Update">
+		<input type="submit" value="Update" class="btn btn-hg btn-primary">
 		</p>
 {% endif %}
 
 </form>
 
 {% if object %}
-<a href="{% url 'app-device-list' object.id %}" target="_blank" > 查看设备列表</a>
+<a href="{% url 'app-device-list' object.id %}" target="_self" > 查看设备列表</a>
 {% endif %}
 
 

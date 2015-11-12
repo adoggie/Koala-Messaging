@@ -2,16 +2,10 @@
 
 {% block content %}
 
-	<p>
-	<h2>Applications: {{ app.app_id }} </h2>
+Devices of Application < {{ app.app_id }} >:
 
-	</p>
-
-	{#---- list devices of application -----#}
-Register Devices:
-
-<table border="1px" bgcolor="#7fffd4">
-<tr>
+<table class="list-device"  border="1px" bgcolor="#7fffd4">
+<tr >
 	<th>ID</th>
 	<th>Device-ID</th>
 	<th>Account</th>

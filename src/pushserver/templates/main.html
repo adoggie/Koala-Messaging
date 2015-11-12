@@ -25,10 +25,17 @@ function on_delete(url,app_id){
 	<form id="form_app_list" method="post">
 {% csrf_token %}
 
-<table border="1px">
-<th> 编号</th>
-<th> app_id</th>
-<th> app_name</th>
+
+
+	<a href="{% url 'app-create' %}"> New App.. </a>
+
+
+
+<table class="list-device" border="1px">
+<th> ID</th>
+<th> App Id</th>
+<th> App Name</th>
+<th> Operation</th>
 {% for app in object_list %}
 	<tr>
 	{% url 'app-detail' app.id as app_url %}
@@ -49,9 +56,6 @@ function on_delete(url,app_id){
 
 </form>
 
-<p>
-	<a href="{% url 'app-create' %}"> Create New App.. </a>
-</p>
 
 {% endblock %}
 

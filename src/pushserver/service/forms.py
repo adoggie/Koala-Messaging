@@ -18,9 +18,9 @@ class RegisterForm(forms.Form):
 
 
 class ApplicationForm(forms.ModelForm):
-	create_time = forms.DateTimeField(label=u'创建时间',required=False)
-	access_id = forms.CharField(label=u'授权编号',required=False)
-	secret_key = forms.CharField(label=u'访问秘钥',required=False)
+	create_time = forms.DateTimeField(label=u'创建时间',required=False,widget=forms.TextInput(attrs={'class':'form-control'}))
+	access_id = forms.CharField(label=u'授权编号',required=False,widget=forms.TextInput(attrs={'class':'form-control'}))
+	secret_key = forms.CharField(label=u'访问秘钥',required=False,widget=forms.TextInput(attrs={'class':'form-control'}))
 	class Meta:
 		model = core.UserApplication
 		fields = ['app_id','app_name','is_active']
@@ -33,6 +33,12 @@ class ApplicationForm(forms.ModelForm):
 			'app_id':{
 				'max_length':u'标识不能为空呢！'
 			}
+		}
+		widgets={
+			'app_id': forms.TextInput(attrs={'class':'form-control'}),
+			'app_name': forms.TextInput(attrs={'class':'form-control'}),
+			'is_active': forms.CheckboxInput(attrs={'class':'custom-checkbox'}),
+
 		}
 
 # class ApplicationUpdateForm(forms.ModelForm):

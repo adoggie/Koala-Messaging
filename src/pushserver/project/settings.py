@@ -78,7 +78,7 @@ STATIC_ROOT = ''
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
 STATIC_URL = '/static/'
-STATIC_ROOT =os.path.dirname(os.path.abspath(__file__))+'/../templates/'
+STATIC_ROOT =os.path.dirname(os.path.abspath(__file__))+'/../templates/static'
 # STATIC_ROOT ='/mnt/web'
 # STATIC_ROOT =os.path.dirname(os.path.abspath(__file__))+'/../../../test/file/'
 print STATIC_ROOT
@@ -91,7 +91,7 @@ STATICFILES_DIRS = (
 )
 
 # List of finder classes that know how to find static files in
-# various locations.
+# various locations..
 STATICFILES_FINDERS = (
 	'django.contrib.staticfiles.finders.FileSystemFinder',
 	'django.contrib.staticfiles.finders.AppDirectoriesFinder',
