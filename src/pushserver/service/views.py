@@ -102,6 +102,7 @@ class ApplicationCreateView(CreateView):
 
 	def form_invalid(self, form):
 		errors = form.errors
+
 		return render_to_response( 'app_detail.html',context_instance=RequestContext(self.request,{'form':form,'errors':errors}))
 
 # class ApplicationUpdateView(UpdateView):
@@ -155,7 +156,36 @@ class ApplicationDetailView( ModelFormMixin, DetailView):
 		# return redirect()
 		return super(ApplicationDetailView,self).form_invalid(form)
 
-		# return render_to_response( 'app_detail.html',context_instance=RequestContext(self.request,{'form':form,'errors':errors}))
+class ApplicationUpdatelView( UpdateView ):
+	# form_class =  forms.ApplicationForm
+	# def get(self, request, *args, **kwargs):
+	model = core.UserApplication
+	template_name = "app_detail.html"
+	fields = ['app_name','is_active']
+	success_url = '/main'
+	paginate_by = 5
+
+	def get_context_data(self,**kwargs):
+		ctx = super(ApplicationDetailView,self).get_context_data(**kwargs)
+		ctx['form'] = forms.ApplicationForm(instance= ctx['object'])
+		return ctx
+
+	def post(self,request,*args,**kwargs):
+		self.object = self.get_object()
+		form = self.get_form()
+		if form.is_valid():
+			return self.form_valid(form)
+		else:
+			return self.form_invalid(form)
+
+	def form_valid(self, form):
+
+		return super(ApplicationDetailView,self).form_valid(form)
+
+	def form_invalid(self, form):
+		errors = form.errors
+		# return redirect()
+		return super(ApplicationDetailView,self).form_invalid(form)
 
 class ApplicationDeviceListView(ListView):
 	paginate_by = 2

@@ -3,80 +3,101 @@
 
 {% block content %}
 
+    <div class="alert alert-warning {{ errors|default:'hidden' }}">
+	{{ errors }}
+    </div>
+
 <p>
 	Application: {{ object.app_id }}
 </p>
 
-
+{#defined variable#}
 {% if not object %}
 	{% url 'app-create' as app_url %}
 {% else %}
 	{% url 'app-detail' object.id as app_url %}
-
 {% endif %}
 
-	{{ errors }}
 
-<form  method="post" action="{{ app_url }}" >
+
+
+<form  method="post" action="{{ app_url }}" role="form" class="form-horizontal">
 	{% csrf_token %}
-{#	{{ form.as_table }}#}
 
+    <div class="form-group">
+        <label for="id_app_id" class="control-label col-md-2">{{ form.app_id.label }}</label>
+        <div class="col-md-6">
+            {% if object %}
+            <p class="form-control-static">{{ object.app_id}}</p>
+            {% else %}
+            <input type="text" class="form-control" id="id_app_id" name="app_id"
+                   maxlength="{{ form.fields.app_id.max_length }}" value="{{ form.data.app_id }}">
+            {% endif %}
+        </div>
+    </div>
 
+    <div class="form-group">
+        <label class="control-label col-md-2" for="id_app_name">{{ form.app_name.label }}</label>
+        <div class="col-md-6">
+            <input type="text" class="form-control" id="id_app_name" name="app_name" value="{{ object.app_name }}" maxlength="{{ form.fields.app_name.max_length }}">
+        </div>
+    </div>
 
-	{{ form.app_id.label }}
-	{{ form.app_id }}
+    <div class="form-group">
+        <label class="control-label col-md-2" for="id_is_active">{{ form.is_active.label }}</label>
+        <div class="col-md-6">
+            {% if object %}
+            <input type="checkbox" class="form-control"  id="id_is_active" name="is_active"  {{ object.is_active|yesno:'checked,,,' }}>
 
+            {% else %}
 
+            <input type="checkbox" class="form-control"  id="id_is_active" name="is_active"  {{ form.data.is_active|yesno:'checked,,,' }}>
+            {% endif %}
+        </div>
+    </div>
 
-	{{ form.app_name.label }}
-	{{ form.app_name }}
+    {% if object %}
+    <div class="form-group">
+        <label class="control-label col-md-2" for="id_create_time">{{ form.create_time.label }}</label>
+        <div class="col-md-6">
+            <p class="form-control-static">{{ object.create_time|date:"Y-m-d H:i:s" }}</p>
 
+        </div>
+    </div>
 
+    <div class="form-group">
+        <label class="control-label col-md-2" for="id_access_id">{{ form.access_id.label }}</label>
+        <div class="col-md-6">
+            <p class="form-control-static">{{ object.access_id }}</p>
 
+        </div>
+    </div>
 
-	{{ form.is_active.label }}
-	{{ form.is_active }}
+    <div class="form-group">
+        <label class="control-label col-md-2" for="id_secret_key">{{ form.secret_key.label }}</label>
+        <div class="col-md-6">
+            <p class="form-control-static">{{ object.secret_key }}</p>
 
-		{{ form.create_time.label }}
-			{{ form.create_time }}
+        </div>
+    </div>
+    {% endif %}
 
-	<p/>
-	{% if object %}
-
-			{{ form.create_time.label }}
-			{{ form.create_time }}
-
-{#			{{ object.create_time|date:"Y-m-d H:i:s" }}#}
-{#		{{ form.create_time|date:"Y-m-d H:i:s"  }}#}
-
-		{{ form.access_id.label }}
-		{{ form.access_id }}
-{#		{{ object.access_id }}#}
-
-		{{ form.secret_key.label }}
-		{{ form.secret_key }}
-
-{#		{{ object.secret_key }}#}
-
-	{% endif %}
-
-
-
+    <div class="form-group">
 	{% if not object %}
-		<p>
-		<input type="submit" value="Create" class="btn btn-hg btn-primary">
-		</p>
+        <button type="submit" class="btn btn-success col-md-2 col-md-offset-1"> create</button>
 		{% else %}
-		<p>
-		<input type="submit" value="Update" class="btn btn-hg btn-primary">
-		</p>
-{% endif %}
+        <button type="submit" class="btn btn-success col-md-2 col-md-offset-1" > update</button>
+    {% endif %}
+
+    {% if object %}
+    <a href="{% url 'app-device-list' object.id %}" class="form-control-static col-md-2 col-md-offset-3" target="_self" > 查看设备列表</a>
+    {% endif %}
+
+    </div>
 
 </form>
 
-{% if object %}
-<a href="{% url 'app-device-list' object.id %}" target="_self" > 查看设备列表</a>
-{% endif %}
+
 
 
 {% endblock %}

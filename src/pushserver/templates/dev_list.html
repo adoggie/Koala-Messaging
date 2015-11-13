@@ -2,9 +2,12 @@
 
 {% block content %}
 
-Devices of Application < {{ app.app_id }} >:
+<div class="">
 
-<table class="list-device"  border="1px" bgcolor="#7fffd4">
+    Devices of Application < {{ app.app_id }} >:
+
+
+<table class="table table-bordered table-condensed table-striped table-hover list-device "  border="1px" bgcolor="#7fffd4">
 <tr >
 	<th>ID</th>
 	<th>Device-ID</th>
@@ -29,7 +32,7 @@ Devices of Application < {{ app.app_id }} >:
 {% endfor %}
 </table>
 
-
+</div>
 
 
 

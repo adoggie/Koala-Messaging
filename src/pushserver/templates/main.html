@@ -31,14 +31,15 @@ function on_delete(url,app_id){
 
 
 
-<table class="list-device" border="1px">
+<table class="table table-bordered table-condensed table-striped table-hover" border="1px">
 <th> ID</th>
 <th> App Id</th>
 <th> App Name</th>
 <th> Operation</th>
+<tbody>
 {% for app in object_list %}
 	<tr>
-	{% url 'app-detail' app.id as app_url %}
+	{% url 'app-update' app.id as app_url %}
 		<td>{{ forloop.counter }}</td>
 		<td>
 			<a href="{{ app_url }}" >
@@ -52,6 +53,9 @@ function on_delete(url,app_id){
 		</td>
 	</tr>
 {% endfor %}
+
+</tbody>
+
 </table>
 
 </form>

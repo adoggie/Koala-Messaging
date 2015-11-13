@@ -71,29 +71,21 @@
 {% block title %}
 {% endblock %}
 
-{#<p>#}
-{#	<ul>#}
-{#		<a href="{% url 'app-list' %}">apps</a>#}
-{#	</ul>#}
-{#	<ul>#}
-{#		messaging#}
-{#	</ul>#}
-{#	<ul>#}
-{#		profile#}
-{#	</ul>#}
-{#	<ul>#}
-{#		<a href="{% url 'logout' %}">logout </a>#}
-{#	</ul>#}
-{##}
-{#</p>#}
+
 <div class="container" >
-	User: {{ view.request.user.username }}
+	<div class="col-md-offset-11 col-sm-offset-11 col-sm-6">
+    User: {{ view.request.user.username }}
+    </div>
 </div>
 
 
 <div class="container">
+
+<div class="row">
 {% block content %}
 {% endblock %}
+</div>
+
 </div>
 
 
