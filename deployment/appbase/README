@@ -1,0 +1,21 @@
+mkdir /home/koala
+# copy  codes & data into /home/koala 
+# file 'service_start.sh' should be stayed in /home/koala. 
+
+
+docker run --name koala -it -v /home/koala:/opt -p 15432:5432 -p 37017:37017 -p 16379:6379 -p 15672:5672 -p 16001:16001 -p 80:80 -p 14001:14001 -p 14002:14002 koala:0.0.2 /run/start_koala.sh
+
+
+koala 0.0.3  2015.11.16 scott
+------
+ 1 python 软件环境安装  （django ,gevent,image,cors-headers,restframework,xls,...)
+ 2. mongodb,redis,pgsql,qpid,nginx( /usr/local/nginx/sbin/nginx)
+        /home/binpack/start.sh | stop.sh
+3. /opt ( -v )
+后台服务配置完成 /run/start_koala.sh 启动所有服务
+需将 application 服务代码放置 /opt/ 
+
+truble shooting:
+===============
+1. postgresql server launch fail
+  shmmin内存分配无法完成 ,调整 postgresql.conf 的  shared_buffer/max_connections 参数

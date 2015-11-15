@@ -3,8 +3,8 @@
 
 {% block content %}
 
-    <div class="alert alert-warning {{ errors|default:'hidden' }}">
-	{{ errors }}
+    <div class="alert alert-warning {{ form.errors|default:'hidden' }}">
+	{{ form.errors }}
     </div>
 
 <p>
@@ -25,7 +25,7 @@
 	{% csrf_token %}
 
     <div class="form-group">
-        <label for="id_app_id" class="control-label col-md-2">{{ form.app_id.label }}</label>
+        <label for="id_app_id" class="control-label col-md-2">应用标识</label>
         <div class="col-md-6">
             {% if object %}
             <p class="form-control-static">{{ object.app_id}}</p>
@@ -37,14 +37,19 @@
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-2" for="id_app_name">{{ form.app_name.label }}</label>
+        <label class="control-label col-md-2" for="id_app_name">应用名称</label>
         <div class="col-md-6">
-            <input type="text" class="form-control" id="id_app_name" name="app_name" value="{{ object.app_name }}" maxlength="{{ form.fields.app_name.max_length }}">
+{#	        {% if object %}#}
+{#            <input type="text" class="form-control" id="id_app_name" name="app_name" value="{{ object.app_name }}" maxlength="{{ form.fields.app_name.max_length }}">#}
+{#	        {% else %}#}
+            <input type="text" class="form-control" id="id_app_name" name="app_name" value="{{ form.data.app_name }}" maxlength="{{ form.fields.app_name.max_length }}">
+{#	        {% endif %}#}
         </div>
     </div>
+{{ form.object }}
 
     <div class="form-group">
-        <label class="control-label col-md-2" for="id_is_active">{{ form.is_active.label }}</label>
+        <label class="control-label col-md-2" for="id_is_active">启 用</label>
         <div class="col-md-6">
             {% if object %}
             <input type="checkbox" class="form-control"  id="id_is_active" name="is_active"  {{ object.is_active|yesno:'checked,,,' }}>
@@ -58,7 +63,7 @@
 
     {% if object %}
     <div class="form-group">
-        <label class="control-label col-md-2" for="id_create_time">{{ form.create_time.label }}</label>
+        <label class="control-label col-md-2" for="id_create_time">创建时间</label>
         <div class="col-md-6">
             <p class="form-control-static">{{ object.create_time|date:"Y-m-d H:i:s" }}</p>
 
@@ -66,7 +71,7 @@
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-2" for="id_access_id">{{ form.access_id.label }}</label>
+        <label class="control-label col-md-2" for="id_access_id">授权令牌</label>
         <div class="col-md-6">
             <p class="form-control-static">{{ object.access_id }}</p>
 
@@ -74,7 +79,7 @@
     </div>
 
     <div class="form-group">
-        <label class="control-label col-md-2" for="id_secret_key">{{ form.secret_key.label }}</label>
+        <label class="control-label col-md-2" for="id_secret_key">安全秘钥</label>
         <div class="col-md-6">
             <p class="form-control-static">{{ object.secret_key }}</p>
 

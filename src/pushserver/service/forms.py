@@ -18,30 +18,20 @@ class RegisterForm(forms.Form):
 
 
 class ApplicationForm(forms.ModelForm):
-	create_time = forms.DateTimeField(label=u'创建时间',required=False,widget=forms.TextInput(attrs={'class':'form-control'}))
-	access_id = forms.CharField(label=u'授权编号',required=False,widget=forms.TextInput(attrs={'class':'form-control'}))
-	secret_key = forms.CharField(label=u'访问秘钥',required=False,widget=forms.TextInput(attrs={'class':'form-control'}))
+	# create_time = forms.DateTimeField(label=u'创建时间',required=False,widget=forms.TextInput(attrs={'class':'form-control'}))
+	# access_id = forms.CharField(label=u'授权编号',required=False,widget=forms.TextInput(attrs={'class':'form-control'}))
+	# secret_key = forms.CharField(label=u'访问秘钥',required=False,widget=forms.TextInput(attrs={'class':'form-control'}))
 	class Meta:
 		model = core.UserApplication
 		fields = ['app_id','app_name','is_active']
 		labels ={
-			'app_id':u'应用标识',
-			'app_name':u'应用名称',
-			'is_active':u'启用',
+			# 'app_id':u'应用标识',
 		}
 		error_messages ={
-			'app_id':{
-				'max_length':u'标识不能为空呢！'
-			}
+			# 'app_id':{
+			# 	'max_length':u'标识不能为空呢！'
+			# }
 		}
 		widgets={
-			'app_id': forms.TextInput(attrs={'class':'form-control'}),
-			'app_name': forms.TextInput(attrs={'class':'form-control'}),
-			'is_active': forms.CheckboxInput(attrs={'class':'custom-checkbox'}),
-
+			# 'app_id': forms.TextInput(attrs={'class':'form-control'}),
 		}
-
-# class ApplicationUpdateForm(forms.ModelForm):
-# 	class Meta:
-# 		model = core.UserApplication
-# 		fields = ['app_id','app_name','is_active','create_time','access_id','secret_key']

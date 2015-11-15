@@ -1,4 +1,4 @@
-django1.8
+django==1.8.6
 django-db-geventpool
 djangorestframework
 django-cors-headers
@@ -8,13 +8,25 @@ greenlet
 gevent-websocket
 pymongo
 PyYAML
-qpid
+image
 redis
 xlrd
 xlwt
 psycogreen
-pycrypto
-pycryto-on-pypi
 
-virtual-env
-ipython
+#pycryto-on-pypi
+#pycrypto
+
+http://archive.apache.org/dist/qpid/0.28/qpid-python-0.28.tar.gz
+http://archive.apache.org/dist/qpid/0.28/qpid-tools-0.28.tar.gz
+https://pypi.python.org/packages/source/p/pycrypto/pycrypto-2.6.1.tar.gz#md5=55a61a054aa66812daf5161a0d5d7eda
+
+# yum  install python-devel gcc gcc-c++ gevent  postgresql-server postgresql-devel openssl-devel	
+# pip install --upgrade pip 
+# easy_install -U distribute 
+
+
+
+#pip install django-contactform
+
+# ./configure --with-http_ssl_module --with-pcre

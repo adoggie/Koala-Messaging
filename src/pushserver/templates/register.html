@@ -2,32 +2,78 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title></title>
+
+	 <link href="/static/flatui/css/vendor/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Loading Flat UI -->
+    <link href="/static/flatui/css/flat-ui.css" rel="stylesheet">
+    <link href="/static/pushmessage.css" rel="stylesheet">
+
+    <link rel="shortcut icon" href="/static/flatui/img/favicon.ico">
+
 </head>
+
+
 <body>
 
-<p>
-	<h2> User Registration</h2>
-</p>
-<form method="post">
-	{% csrf_token %}
+<div class="container" >
+	<div style="height: 50px">
 
-	<table>
-		<tr>
-			<td>
-			{{ form.email.label }}
-			{{ form.email }}
-			</td>
+	</div>
+	<div class="row">
+		<div class="col-md-offset-1 col-md-4" style="text-align: center">
+			<h2> 用户注册</h2>
+		</div>
+	</div>
+	<div style="height: 50px">
 
-		</tr>
-		<tr>
-			<td>
-				{{ form.password.label }}
-				{{ form.password }}
-			</td>
-		</tr>
-	</table>
-	<input type="submit" value="register">
-</form>
+	</div>
+	<div class="row">
+		<div class="col-md-offset-1 col-md-4">
+			<form method="post" role="form" class="form-horizontal">
+				{% csrf_token %}
+
+				<div class="form-group">
+					<label class="control-label col-md-2"> {{ form.email.label }}</label>
+					<div class="col-md-offset-2">
+						<input type="text" class="form-control" id="id_email" maxlength="{{ form.fields.email.max_length }}" name="email">
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="control-label col-md-2"> {{ form.password.label }}</label>
+					<div class="col-md-offset-2">
+						<input type="password" class="form-control" name="password" id="id_password" maxlength="{{ form.fields.password.max_length }}" name="email">
+					</div>
+				</div>
+
+
+
+				<div class="form-group" >
+
+					<input role="button" class="btn btn-primary col-md-offset-2 col-md-10" type="submit" value="register">
+
+				</div>
+			</form>
+		</div>
+
+	</div>
+
+<div class="row">
+	<p></p>
+	<div class=" col-md-6">
+	<p class="bg-warning" style="text-align: center">
+
+	{{ form.errors }}
+	</p>
+	</div>
+</div>
+
+
+
+</div>
+
 </body>
 </html>

@@ -6,6 +6,7 @@ import datetime,traceback,sys,os,time
 
 from django.views.generic import TemplateView,View,FormView,DetailView
 from django.views.generic.list import  ListView
+from django.shortcuts import render_to_response
 
 from django.views.generic.edit import CreateView,DeleteView,UpdateView,\
 	ModelFormMixin,FormMixin,DeletionMixin
@@ -65,22 +66,33 @@ class RegisterView(FormView):
 	# template_name_suffix = '_create_form'
 	form_class = forms.RegisterForm
 	template_name = 'register.html'
-	success_url = 'register_succ'
+	success_url = '/main/'
 
 	def form_valid(self, form):
 		errors=[]
 		username = form.cleaned_data['username']
 		password = form.cleaned_data['password']
 		email = form.cleaned_data['email']
+		username = email
+		if auth_user.objects.filter( username = username).count():
+			form._errors = "User Name:%s has existed!"%username
+			return   super(RegisterView,self).form_invalid(form)
+
 		user = auth_user.objects.create_user(username,email,password)
 		acct = PushUserAccount(user = user)
 		acct.save()
+
+		user = authenticate(username=username,password=password)
+		if user:
+			login(self.request,user)
 		return super(RegisterView,self).form_valid(form)
 
 	def form_invalid(self, form):
-		print form.errors.as_json()
-		print form.instance
-		return HttpResponse("wrong data!")
+		# print form.errors.as_json()
+		# print form.instance
+		return super(RegisterView,self).form_invalid(form)
+
+		# return HttpResponse("wrong data!")
 
 class ApplicationCreateView(CreateView):
 	form_class = forms.ApplicationForm
@@ -157,35 +169,20 @@ class ApplicationDetailView( ModelFormMixin, DetailView):
 		return super(ApplicationDetailView,self).form_invalid(form)
 
 class ApplicationUpdatelView( UpdateView ):
-	# form_class =  forms.ApplicationForm
-	# def get(self, request, *args, **kwargs):
 	model = core.UserApplication
 	template_name = "app_detail.html"
 	fields = ['app_name','is_active']
-	success_url = '/main'
+	success_url = '/applications/'
 	paginate_by = 5
 
 	def get_context_data(self,**kwargs):
-		ctx = super(ApplicationDetailView,self).get_context_data(**kwargs)
-		ctx['form'] = forms.ApplicationForm(instance= ctx['object'])
+		ctx = super(ApplicationUpdatelView,self).get_context_data(**kwargs)
+		if not ctx['form'].data:
+			ctx['form'].data = ctx['object']
+		# ctx['form'] = forms.ApplicationForm(instance= ctx['object'])
 		return ctx
 
-	def post(self,request,*args,**kwargs):
-		self.object = self.get_object()
-		form = self.get_form()
-		if form.is_valid():
-			return self.form_valid(form)
-		else:
-			return self.form_invalid(form)
 
-	def form_valid(self, form):
-
-		return super(ApplicationDetailView,self).form_valid(form)
-
-	def form_invalid(self, form):
-		errors = form.errors
-		# return redirect()
-		return super(ApplicationDetailView,self).form_invalid(form)
 
 class ApplicationDeviceListView(ListView):
 	paginate_by = 2

@@ -26,15 +26,20 @@ function on_delete(url,app_id){
 {% csrf_token %}
 
 
+<div>
+	<a role="button" class="btn btn-primary btn-sm" href="{% url 'app-create' %}"> New App.. </a>
+	<p></p>
+</div>
 
-	<a href="{% url 'app-create' %}"> New App.. </a>
 
+<div>
 
-
-<table class="table table-bordered table-condensed table-striped table-hover" border="1px">
+<table class="table table-bordered table-condensed table-striped table-hover list-device" border="1px">
 <th> ID</th>
 <th> App Id</th>
 <th> App Name</th>
+<th> Active</th>
+<th> CreateTime</th>
 <th> Operation</th>
 <tbody>
 {% for app in object_list %}
@@ -47,9 +52,13 @@ function on_delete(url,app_id){
 				</a>
 		</td>
 		<td>{{ app.app_name|urlize}}</td>
+		<td> {{ app.is_active }}</td>
+		<td> {{ app.create_time|date:"Y-m-d H:i:s"}}</td>
 		<td>
 			<a href="javascript:void(0)" onclick='on_delete("{% url 'app-delete' app.id %}", "{{app.app_id }}")' >delete</a>
 {#			<a href="{%  url 'app-msg-test' app.id %}" >test</a>#}
+
+
 		</td>
 	</tr>
 {% endfor %}
@@ -57,6 +66,8 @@ function on_delete(url,app_id){
 </tbody>
 
 </table>
+
+</div>
 
 </form>
 
