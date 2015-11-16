@@ -27,7 +27,8 @@ from gevent.pywsgi import WSGIServer
 import django
 from django.core.handlers.wsgi import WSGIHandler
 # 大坑呢 ,  django 1.8+版本必须加上一下代码行,不然出莫名错误
-django.setup()
+if hasattr(django,'setup'):
+	django.setup()
 
 import getopt
 
