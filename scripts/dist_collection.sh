@@ -10,3 +10,6 @@ SERVICE_DIR=$pwd/../deployment/appbase/services
 mkdir -p $SERVICE_DIR
 cp -r $pwd/../common $SERVICE_DIR
 cp -r $pwd/../src/* $SERVICE_DIR
+
+
+cp -r $pwd/../../TCE/python/tcelib $SERVICE_DIR/common

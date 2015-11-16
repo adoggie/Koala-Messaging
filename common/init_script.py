@@ -6,7 +6,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "project.settings")
 
 PRJ_PATH = os.path.dirname(os.path.abspath(__file__))
 
-TCE_PATH = os.environ.get('TCE')+'/python'
+TCE_PATH = os.environ.get('TCE','/null')+'/python'
 
 ETC_PATH = PRJ_PATH  +'/etc'
 
