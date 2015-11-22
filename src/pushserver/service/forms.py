@@ -23,7 +23,8 @@ class ApplicationForm(forms.ModelForm):
 	# secret_key = forms.CharField(label=u'访问秘钥',required=False,widget=forms.TextInput(attrs={'class':'form-control'}))
 	class Meta:
 		model = core.UserApplication
-		fields = ['app_id','app_name','is_active']
+		# fields = ['app_id','app_name','is_active']
+		fields = ['app_id','app_name','is_active','address_restricted']
 		labels ={
 			# 'app_id':u'应用标识',
 		}

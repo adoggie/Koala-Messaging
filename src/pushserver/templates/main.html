@@ -39,6 +39,7 @@ function on_delete(url,app_id){
 <th> App Id</th>
 <th> App Name</th>
 <th> Active</th>
+<th> Address Restricted</th>
 <th> CreateTime</th>
 <th> Operation</th>
 <tbody>
@@ -53,6 +54,7 @@ function on_delete(url,app_id){
 		</td>
 		<td>{{ app.app_name|urlize}}</td>
 		<td> {{ app.is_active }}</td>
+		<td> {{ app.address_restricted }}</td>
 		<td> {{ app.create_time|date:"Y-m-d H:i:s"}}</td>
 		<td>
 			<a href="javascript:void(0)" onclick='on_delete("{% url 'app-delete' app.id %}", "{{app.app_id }}")' >delete</a>

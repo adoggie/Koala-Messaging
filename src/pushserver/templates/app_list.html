@@ -15,9 +15,9 @@
 	<tr>
 		<td>{{ forloop.counter }}</td>
 		<td>{{ app.app_id }} </td>
+
 		<td>{{ app.app_name|urlize}}</td>
 		<td>
-
 			<a href="{%  url 'app-detail'  %}" >delete</a>
 		</td>
 	</tr>

@@ -27,6 +27,7 @@ class UserApplication(models.Model):
 	create_time = models.DateTimeField(help_text=u'创建时间')
 	access_id = models.CharField(max_length=200,unique=True,db_index=True,help_text=u'应用访问标识')
 	secret_key = models.CharField(max_length=200,db_index=True,help_text=u'应用访问秘钥')
+	address_restricted = models.BooleanField(default=False,help_text=u'消息推送者的ip地址限制')
 
 	class Meta:
 		index_together = ( ("access_id", "secret_key"),)
@@ -42,6 +43,20 @@ class UserAppDevice(models.Model):
 	access_token = models.CharField(max_length=200,null=True,help_text=u'设备登陆访问token')
 	access_time = models.DateTimeField(null=True,help_text=u'最近一次访问时间')
 	platform = models.SmallIntegerField(help_text=u'平台类型')
+
+class PushAddressRestricted(models.Model):
+	"""
+	消息推送请求的ip地址限制
+	"""
+	app = models.ForeignKey(UserApplication,related_name='address_restricted_set',on_delete= django.db.models.CASCADE)
+	name = models.CharField(max_length=40)
+	address = models.CharField(max_length=40,help_text=u'访问地址')
+	mask = models.SmallIntegerField(default=0,help_text=u'地址掩码')
+	comment = models.CharField(max_length=200,null=True,default='')
+	is_black = models.BooleanField(default=False,help_text=u'是否是黑名单')
+	is_active = models.BooleanField(default=True,help_text=u'是否启用')
+
+
 
 if __name__ == '__main__':
 	# print OrgUserAppConfig.app_auth_time.help_text

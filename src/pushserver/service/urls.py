@@ -30,17 +30,20 @@ urlpatterns = patterns('',
 		model=core.UserApplication,success_url='/applications'),
 	),name='app-delete'),
 
+	url(r'^address_restricted/(?P<pk>[0-9]+)/delete/$',login_required( views.RestrictedAddressDeleteView.as_view()),name='app-address-delete'),
+
+	url(r'^applications/(?P<pk>[0-9]+)/address_restricted/new/$',login_required( views.RestrictedAddressCreateView.as_view() ),name='app-address-create'),
+	url(r'^applications/(?P<pk_app>[0-9]+)/address_restricted/(?P<pk>[0-9]+)/$',login_required( views.RestrictedAddressUpdatelView.as_view() ),name='app-address-update'),
+	url(r'^applications/(?P<pk>[0-9]+)/address_restricted/$',login_required( views.RestrictedAddressListView.as_view() ),name='app-address-restricted'),
+
 	url(r'^applications/(?P<pk>[0-9]+)/$',login_required( views.ApplicationUpdatelView.as_view() ),name='app-update'),
-	# url(r'^applications/(?P<pk>[0-9]+)/$',login_required( UpdateView.as_view(
-	# 												form_class=service.forms.ApplicationUpdateForm,
-	# 													  success_url = '/applications/',
-	# 													  template_name ='app_detail.html',
-	# 														queryset=core.UserApplication.objects.all(),
-	# 													  )),name='app-update'),
 
 	url(r'^applications/new/$',login_required( views.ApplicationCreateView.as_view()),name='app-create'),
 	url(r'^applications/(?P<pk>[0-9]+)/devices/$',login_required( views.ApplicationDeviceListView.as_view() ),name='app-device-list'),
 	url(r'^static/(?P<path>.*)$','django.views.static.serve',{'document_root':settings.STATIC_ROOT}),
+
+
+
 
 )
 
