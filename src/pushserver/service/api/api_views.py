@@ -16,6 +16,7 @@ from model.core import models as core
 from koala.koala_impl import Message_t
 from mexs import mexs
 from koala.base import *
+import koala.errors
 from token import create_device_access_token
 
 PAGE_SIZE = 100	#每次提交 page_size条记录，防止内存溢出
@@ -314,8 +315,35 @@ def simple_device(request):
 		mexs.ServerAppMexs.instance().sendMessage( app.app_id, token_list, message)
 	return cr.httpResponse()
 
+def push_message_allow(request):
+	allow = False
+	try:
+		access_id = request.data['access_id']
+		secret_key = request.data['secret_key']
+		app = core.UserApplication.objects.get(access_id=access_id,secret_key=secret_key)
+		if not app.address_restricted:
+			allow = True
+		else:
+			remote_addr = request.META.get('REMOTE_HOST')
+			if app.address_restricted_set.all().filter(address=remote_addr,is_active=True).count():
+				allow =True
+	except:
+		traceback.print_exc()
+	print 'push message allow checking: ',allow
+	return allow
+
+def address_restricted(func):
+	def decorator(request):
+		if  push_message_allow(request):
+			return func(request)
+		return FailCallReturn( koala.errors.ErrorDefs.PushReject_AddressRestricted)
+	return decorator
+
+
+
 @api_view(['POST'])
 @parser_classes((JSONParser,))
+@address_restricted
 def simple_account(request):
 	"""
 	simple_acount
