@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 
 #mkdir /home/koala
 pwd=$(cd `dirname $0`;pwd)
