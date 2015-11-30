@@ -20,7 +20,8 @@ else:
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 
 import django
-django.setup()	# 大坑呢 ,  django 1.8+版本必须加上一下代码行,不然出莫名错误
+if hasattr(django,'setup'):
+	django.setup()	# 大坑呢 ,  django 1.8+版本必须加上一下代码行,不然出莫名错误
 from django.contrib.auth.models import User
 
 from model.core import models as core

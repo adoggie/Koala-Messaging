@@ -34,8 +34,8 @@ rsync -rvt  $pwd/../../TCE/python/tcelib $KOALA_HOME/common
 rsync -rvt  $pwd/clean.sh $pwd/docker_start.sh $pwd/service_start.sh $pwd/init_db.sh $RELEASE_DIR
 rsync -rvt  $pwd/scripts $RELEASE_DIR
 
-rm -r $KOALA_HOME/pushserver/koala.db
+#rm -r $KOALA_HOME/pushserver/koala.db
 
 
-#cat $pwd/../common/etc/settings.yaml | sed 's/s100/localhost/' > $SERVICE_DIR/common/etc/settings.yaml
-#cat $pwd/../common/etc/services.xml | sed 's/s100/localhost/' > $SERVICE_DIR/common/etc/services.xml
+cat $SRC_HOME/common/etc/settings.yaml | sed 's/s100/localhost/' > $KOALA_HOME/common/etc/settings.yaml
+cat $SRC_HOME/common/etc/services.xml | sed 's/s100/localhost/' > $KOALA_HOME/common/etc/services.xml
