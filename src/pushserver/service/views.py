@@ -358,3 +358,7 @@ class RestrictedAddressDeleteView(DeleteView):
 		self.success_url = reverse('app-address-restricted',args=[self.object.app.id])
 		return self.success_url
 
+class MessagingView(View):
+	def get(self,request):
+		apps = request.user.auth_user.user_apps.all()
+		return render_to_response('messaging.html',context={'apps':apps})

@@ -42,6 +42,8 @@ urlpatterns = patterns('',
 	url(r'^applications/(?P<pk>[0-9]+)/devices/$',login_required( views.ApplicationDeviceListView.as_view() ),name='app-device-list'),
 	url(r'^static/(?P<path>.*)$','django.views.static.serve',{'document_root':settings.STATIC_ROOT}),
 
+	url(r'^applications/messaging/$',views.MessagingView.as_view(),name='app-messaging'),
+
 
 
 
