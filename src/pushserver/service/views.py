@@ -361,4 +361,5 @@ class RestrictedAddressDeleteView(DeleteView):
 class MessagingView(View):
 	def get(self,request):
 		apps = request.user.auth_user.user_apps.all()
-		return render_to_response('messaging.html',context={'apps':apps})
+		context={'apps':apps,'view':self}
+		return render_to_response('messaging.html',context_instance=RequestContext(self.request,context))

@@ -5,27 +5,19 @@
 
 <h6>消息发送测试</h6>
 {% include "warning_top.html" %}
-
-
-
-
 <form  method="post" action="{{ app_url }}" role="form" class="form-horizontal">
 	{% csrf_token %}
-
     <div class="form-group">
-        <label for="id_target" class="control-label col-md-2">Target Account</label>
+        <label for="id_target" class="control-label col-md-2">Application</label>
         <div class="col-md-6">
              <select data-toggle="select" class="form-control select select-default mrs mbm">
-              <option value="0">My Profile</option>
-              <option value="1">My Friends</option>
-              <option value="2">My Profile</option>
-              <option value="3">My Friends</option>
-
+                 {% for app in apps %}
+              <option value="{{  app.id }}">{{ forloop.counter }}.{{ app.app_id }}_{{ app.app_name }}</option>
+                 {% endfor %}
             </select>
         </div>
 
     </div>
-
 
     <div class="form-group">
         <label for="id_target" class="control-label col-md-2">Target Account</label>

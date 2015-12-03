@@ -17,6 +17,8 @@ from . import views
 domain_pattern = '[a-zA-Z0-9][-a-zA-Z0-9]{0,62}'
 
 urlpatterns = patterns('',
+	url(r'^$',RedirectView.as_view(url='/main',permanent=True)),
+
 	url(r'^api/',include( 'service.api.urls' )),
 	url(r'^login/$',views.LoginView.as_view(),name='login'),
 	url(r'^logout/$',logout,{'next_page':'login'},name='logout'),
@@ -42,7 +44,7 @@ urlpatterns = patterns('',
 	url(r'^applications/(?P<pk>[0-9]+)/devices/$',login_required( views.ApplicationDeviceListView.as_view() ),name='app-device-list'),
 	url(r'^static/(?P<path>.*)$','django.views.static.serve',{'document_root':settings.STATIC_ROOT}),
 
-	url(r'^applications/messaging/$',views.MessagingView.as_view(),name='app-messaging'),
+	url(r'^applications/messaging/$',login_required(views.MessagingView.as_view()),name='app-messaging'),
 
 
 
