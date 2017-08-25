@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<component name="dataSourceStorage">
-  <data-source name="SQLite -" uuid="a5359927-9934-45fd-94b8-8c5906081897">
-    <database-info product="" version="" jdbc-version="" driver-name="" driver-version=""/>
-  </data-source>
-  <data-source name="PostgreSQL - redmine_production@s100" uuid="45d55249-5b1c-401e-9867-ed5631992445">
-    <database-info product="" version="" jdbc-version="" driver-name="" driver-version=""/>
-  </data-source>
-</component>
