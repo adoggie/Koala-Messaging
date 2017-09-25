@@ -29,7 +29,8 @@ requirejs(['message_client'],function(client){
      模拟业务服务器登陆消息系统,提供 app_id,secret_key,user_id ,返回访问消息服务的令牌 token
      */
     function login(){
-        var url = "http://localhost:15555" + '/koala/api/mas/tickets';
+        // var url = "http://localhost:15555" + '/koala/api/mas/tickets';
+        var url = "http://192.168.1.233:15555" + '/koala/api/mas/tickets';
         $.ajax({
             url: url,
             type: 'POST',
@@ -63,8 +64,10 @@ requirejs(['message_client'],function(client){
         client.open({
             onMessage: onMessage,
             ping: 5,
-            mgws_url: 'ws://localhost:14002',
-            mas_url: 'http://localhost:15555',
+            // mgws_url: 'ws://localhost:14002',
+            mgws_url: 'ws://192.168.1.233:8888/mexs/',
+            // mas_url: 'http://localhost:15555',
+            mas_url: 'http://192.168.1.233:8888/',
             token: token
         });
 
